@@ -1,2 +1,7 @@
-# aws-greengrass-core-sdk-js
+## AWS Greengrass Core SDK Js
+
 Greengrass Nodejs SDK
+
+## License
+
+This library is licensed under the Apache 2.0 License. 
