@@ -1,0 +1,41 @@
+The TES example package contains a Lambda function that, when run,
+will attempt to retrieve AWS credentials. The goal of TES is to allow
+users to retrieve credentials without having them hard-coded on the
+system itself.
+
+Assuming no credentials exist on the system, when the Lambda function
+is run, temporary credentials will be sourced from the cloud.
+
+The credential retrieval is retrieved with an incremental backoff
+in case of an error. Users must be aware that the retrieval may not
+always succeed on the first try and retry should be performed with care.
+
+### SETUP ###
+1. Copy the included index.js to your Lambda function.
+
+2. Install aws-sdk by performing "npm install aws-sdk".
+
+3. Unzip the Greengrass Core SDK for NodeJS into node_modules folder.
+
+4. Zip the folder with index.js on the top level.
+
+5. Create a Lambda in the Lambda Console.
+   Handler: index.handler
+   Runtime: Node.js 8.10
+   Timeout: 3s
+   Role: any basic execution role can be used here
+
+6. Create a group that contains your Greengrass Core and the Lambda
+function you've just created.
+
+7. In the Greengrass console, click on the Lambda function and set
+the Memory limit is at least 40MB and "Lambda lifecycle" is set to
+"Make this function long-lived and keep it running indefinitely".
+
+8. Under Settings page of the group, make sure the Group Role is
+set to the role you want to use within Greengrass when
+performing actions against AWS.
+
+9. Deploy the latest Greengrass to your device.
+
+10. Local log should display the access key, secret key and session token.
