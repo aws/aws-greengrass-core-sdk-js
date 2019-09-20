@@ -23,7 +23,7 @@ const shadowGetParams = {
     thingName: 'platform',
 };
 
-exports.handler = function handler(event, context) {
+exports.handler = function handler(event, context, callback) {
     console.log(context);
 
     // Update Thing Shadow
@@ -31,18 +31,23 @@ exports.handler = function handler(event, context) {
     iotClient.updateThingShadow(shadowUpdateParams, (err, data) => {
         if (err) {
             console.log(err);
+            callback(err);
         } else {
             console.log(data);
+
+            console.log('Shadow Get Operation');
+            iotClient.getThingShadow(shadowGetParams, (err, data) => {
+                if (err) {
+                    console.log(err);
+                    callback(err);
+                } else {
+                    console.log(data);
+                    callback(null, 0);
+                }
+            });
         }
     });
 
     // Get Thing Shadow
-    console.log('Shadow Get Operation');
-    iotClient.getThingShadow(shadowGetParams, (err, data) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(data);
-        }
-    });
+    
 };
