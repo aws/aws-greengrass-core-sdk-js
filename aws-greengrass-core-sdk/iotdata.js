@@ -24,7 +24,7 @@ class IotData {
          * @param {object} params object contains parameters for the call
          * REQUIRED: 'thingName' the name of the thing
          */
-        const thingName = Util.getRequiredParameter(params, 'thingName');
+        const thingName = Util.getParameter(params, 'thingName');
         if (thingName === undefined) {
             callback(new Error('"thingName" is a required parameter.'), null);
             return;
@@ -41,13 +41,13 @@ class IotData {
          * REQUIRED: 'thingName' the name of the thing
          *           'payload'   the state information in JSON format
          */
-        const thingName = Util.getRequiredParameter(params, 'thingName');
+        const thingName = Util.getParameter(params, 'thingName');
         if (thingName === undefined) {
             callback(new Error('"thingName" is a required parameter.'), null);
             return;
         }
 
-        const payload = Util.getRequiredParameter(params, 'payload');
+        const payload = Util.getParameter(params, 'payload');
         if (payload === undefined) {
             callback(new Error('"payload" is a required parameter.'), null);
             return;
@@ -62,7 +62,7 @@ class IotData {
          * @param {object} params object contains parameters for the call
          * REQUIRED: 'thingName' the name of the thing
          */
-        const thingName = Util.getRequiredParameter(params, 'thingName');
+        const thingName = Util.getParameter(params, 'thingName');
         if (thingName === undefined) {
             callback(new Error('"thingName" is a required parameter.'), null);
             return;
@@ -78,25 +78,44 @@ class IotData {
          * @param {object} params object contains parameters for the call
          * REQUIRED: 'topic'   the topic name to be published
          *           'payload' the state information in JSON format
+         * OPTIONAL: 'queueFullPolicy' the policy for GGC to take when its internal queue is full
          */
-        const topic = Util.getRequiredParameter(params, 'topic');
+        const topic = Util.getParameter(params, 'topic');
         if (topic === undefined) {
             callback(new Error('"topic" is a required parameter'), null);
             return;
         }
 
-        const payload = Util.getRequiredParameter(params, 'payload');
+        const payload = Util.getParameter(params, 'payload');
         if (payload === undefined) {
             callback(new Error('"payload" is a required parameter'), null);
             return;
         }
 
+        // this is an optional parameter
+        const queueFullPolicy = Util.getParameter(params, 'queueFullPolicy');
+
         const context = {
             custom: {
                 source: MY_FUNCTION_ARN,
                 subject: topic,
+                queueFullPolicy: '',
             },
         };
+
+        switch (queueFullPolicy) {
+            case 'BestEffort':
+            case 'AllOrError':
+                context.custom.queueFullPolicy = queueFullPolicy;
+                break;
+            case '':
+            case undefined:
+            case null:
+                break;
+            default:
+                callback(new Error(`queueFullPolicy "${queueFullPolicy}" is not supported`), null);
+                break;
+        }
 
         const buff = Buffer.from(JSON.stringify(context));
         const clientContext = buff.toString('base64');

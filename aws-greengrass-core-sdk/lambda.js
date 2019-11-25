@@ -17,7 +17,7 @@ class Lambda {
     }
 
     invoke(params, callback) {
-        const functionName = Util.getRequiredParameter(params, 'FunctionName');
+        const functionName = Util.getParameter(params, 'FunctionName');
         if (functionName === undefined) {
             callback(new Error('"FunctionName" is a required parameter'), null);
             return;

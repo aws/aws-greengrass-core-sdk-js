@@ -23,9 +23,9 @@ class SecretsManager {
     }
 
     getSecretValue(params, callback) {
-        const secretId = Util.getRequiredParameter(params, KEY_SECRET_ID);
-        const versionId = Util.getRequiredParameter(params, KEY_VERSION_ID);
-        const versionStage = Util.getRequiredParameter(params, KEY_VERSION_STAGE);
+        const secretId = Util.getParameter(params, KEY_SECRET_ID);
+        const versionId = Util.getParameter(params, KEY_VERSION_ID);
+        const versionStage = Util.getParameter(params, KEY_VERSION_STAGE);
 
         if (secretId === undefined) {
             callback(new Error(`"${KEY_SECRET_ID}" is a required parameter`), null);

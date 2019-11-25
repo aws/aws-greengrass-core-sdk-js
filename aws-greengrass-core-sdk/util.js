@@ -5,11 +5,11 @@
 const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 const qualifierRegex = /(|[a-zA-Z0-9$_-]+)/;
 
-exports.getRequiredParameter = function _getRequiredParameter(params, requiredParam) {
-    if (!Object.prototype.hasOwnProperty.call(params, requiredParam)) {
+exports.getParameter = function _getParameter(params, desiredParam) {
+    if (!Object.prototype.hasOwnProperty.call(params, desiredParam)) {
         return;
     }
-    return params[requiredParam];
+    return params[desiredParam];
 };
 
 exports.isValidJSON = function _isValidJSON(str) {
