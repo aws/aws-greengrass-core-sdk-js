@@ -18,7 +18,6 @@ The environment where Greengrass is running on needs to be able to run NodeJS 8.
 *   When you untar the package downloaded from NodeJS website, you will find `node` file under `bin` directory.
 *   Copy the file to _**/usr/bin**_ or _**/usr/local/bin**_ folder.
 *   Rename the file to _**nodejs8.10**_
-*   Make sure the file is not a symlink.
 
 ## Getting Started - Hello World
 
@@ -105,9 +104,25 @@ As new features are added to AWS Greengrass, previous versions of the Greengrass
 
 </tr>
 
+<tr>
+
+<td>1.10.x</td>
+
+<td>1.0.x-1.5.x</td>
+
+</tr>
+
 </tbody>
 
 </table>
+
+</div>
+
+<div class="Section" id="1.5.0updates">
+
+## 1.5.0 Updates[¶](#1.5.0updates "Permalink to this headline")
+
+Added support for publish() parameter queueFullPolicy which can be set to 'AllOrError' to enforce that the published message is either delivered to all subscription destinations or delivered to no destinations and returns an error when Greengrass Core's internal work queue is full.
 
 </div>
 

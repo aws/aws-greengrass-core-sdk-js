@@ -26,6 +26,7 @@ const myPlatform = util.format('%s-%s', os.platform(), os.release());
 const pubOpt = {
     topic: 'hello/world',
     payload: JSON.stringify({ message: util.format('Hello world! Sent from Greengrass Core running on platform: %s using NodeJS', myPlatform) }),
+    queueFullPolicy: 'AllOrError',
 };
 
 function greengrassHelloWorldRun() {
