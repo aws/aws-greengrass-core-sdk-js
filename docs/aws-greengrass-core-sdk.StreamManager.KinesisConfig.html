@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: KinesisConfig</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: KinesisConfig</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a><a href="aws-greengrass-core-sdk.StreamManager.html">.StreamManager</a>~</span>KinesisConfig<span class="signature">(identifier, kinesisStreamName, batchSize, batchIntervalMillis, priority)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Configuration object for Kinesis data streams export destination.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="KinesisConfig"><span class="type-signature"></span>new KinesisConfig<span class="signature">(identifier, kinesisStreamName, batchSize, batchIntervalMillis, priority)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>identifier</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kinesisStreamName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The name of the Kinesis data stream that this exporter should upload to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>batchSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The batch size must be between 1 and 500.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>batchIntervalMillis</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>priority</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1939">line 1939</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="batchIntervalMillis"><span class="type-signature"></span>batchIntervalMillis<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2070">line 2070</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="batchIntervalMillis"><span class="type-signature"></span>batchIntervalMillis<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2078">line 2078</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="batchSize"><span class="type-signature"></span>batchSize<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The batch size must be between 1 and 500.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2037">line 2037</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="batchSize"><span class="type-signature"></span>batchSize<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2045">line 2045</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="identifier"><span class="type-signature"></span>identifier<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1979">line 1979</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="identifier"><span class="type-signature"></span>identifier<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1986">line 1986</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="kinesisStreamName"><span class="type-signature"></span>kinesisStreamName<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The name of the Kinesis data stream that this exporter should upload to
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2008">line 2008</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="kinesisStreamName"><span class="type-signature"></span>kinesisStreamName<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2014">line 2014</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="priority"><span class="type-signature"></span>priority<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2101">line 2101</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="priority"><span class="type-signature"></span>priority<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2107">line 2107</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withBatchIntervalMillis"><span class="type-signature"></span>withBatchIntervalMillis<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2091">line 2091</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withBatchSize"><span class="type-signature"></span>withBatchSize<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The batch size must be between 1 and 500.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2058">line 2058</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withIdentifier"><span class="type-signature"></span>withIdentifier<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1998">line 1998</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withKinesisStreamName"><span class="type-signature"></span>withKinesisStreamName<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the Kinesis data stream that this exporter should upload to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2025">line 2025</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withPriority"><span class="type-signature"></span>withPriority<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2118">line 2118</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Jan 16 2020 19:55:23 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

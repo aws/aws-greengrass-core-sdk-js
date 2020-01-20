@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: IoTAnalyticsConfig</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: IoTAnalyticsConfig</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a><a href="aws-greengrass-core-sdk.StreamManager.html">.StreamManager</a>~</span>IoTAnalyticsConfig<span class="signature">(identifier, iotChannel, iotMsgIdPrefix, batchSize, batchIntervalMillis, priority)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Configuration object for IoT Analytics export destination.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="IoTAnalyticsConfig"><span class="type-signature"></span>new IoTAnalyticsConfig<span class="signature">(identifier, iotChannel, iotMsgIdPrefix, batchSize, batchIntervalMillis, priority)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>identifier</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>iotChannel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The name of the IoT Analytics Channel that this exporter should upload to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>iotMsgIdPrefix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">A string prefixed to each unique message id. After this prefix, StreamManager may append more data to make the message ID unique.
+       This prefix must be less than 32 characters.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>batchSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The batch size must be between 1 and 100.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>batchIntervalMillis</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>priority</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1582">line 1582</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="batchIntervalMillis"><span class="type-signature"></span>batchIntervalMillis<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1749">line 1749</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="batchIntervalMillis"><span class="type-signature"></span>batchIntervalMillis<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1757">line 1757</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="batchSize"><span class="type-signature"></span>batchSize<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The batch size must be between 1 and 100.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1716">line 1716</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="batchSize"><span class="type-signature"></span>batchSize<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1724">line 1724</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="identifier"><span class="type-signature"></span>identifier<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1628">line 1628</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="identifier"><span class="type-signature"></span>identifier<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1635">line 1635</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="iotChannel"><span class="type-signature"></span>iotChannel<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The name of the IoT Analytics Channel that this exporter should upload to
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1657">line 1657</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="iotChannel"><span class="type-signature"></span>iotChannel<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1663">line 1663</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="iotMsgIdPrefix"><span class="type-signature"></span>iotMsgIdPrefix<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    A string prefixed to each unique message id. After this prefix, StreamManager may append more data to make the message ID unique.
+       This prefix must be less than 32 characters.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1685">line 1685</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="iotMsgIdPrefix"><span class="type-signature"></span>iotMsgIdPrefix<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1692">line 1692</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="priority"><span class="type-signature"></span>priority<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1780">line 1780</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="priority"><span class="type-signature"></span>priority<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1786">line 1786</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withBatchIntervalMillis"><span class="type-signature"></span>withBatchIntervalMillis<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1770">line 1770</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withBatchSize"><span class="type-signature"></span>withBatchSize<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The batch size must be between 1 and 100.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1737">line 1737</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withIdentifier"><span class="type-signature"></span>withIdentifier<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1647">line 1647</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withIotChannel"><span class="type-signature"></span>withIotChannel<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the IoT Analytics Channel that this exporter should upload to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1674">line 1674</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withIotMsgIdPrefix"><span class="type-signature"></span>withIotMsgIdPrefix<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A string prefixed to each unique message id. After this prefix, StreamManager may append more data to make the message ID unique.
+       This prefix must be less than 32 characters.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1704">line 1704</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withPriority"><span class="type-signature"></span>withPriority<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1797">line 1797</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Jan 16 2020 19:55:23 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

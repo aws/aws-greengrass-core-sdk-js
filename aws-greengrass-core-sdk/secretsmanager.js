@@ -1,11 +1,11 @@
 /*
  * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  */
-const Buffer = require('buffer').Buffer;
+const { Buffer } = require('buffer');
 
+const GreengrassCommon = require('aws-greengrass-common-js');
 const Lambda = require('./lambda');
 const Util = require('./util');
-const GreengrassCommon = require('aws-greengrass-common-js');
 
 const KEY_SECRET_ID = 'SecretId';
 const KEY_VERSION_ID = 'VersionId';
@@ -14,14 +14,62 @@ const KEY_SECRET_ARN = 'ARN';
 const KEY_SECRET_NAME = 'Name';
 const KEY_CREATED_DATE = 'CreatedDate';
 
-const envVars = GreengrassCommon.envVars;
-const SECRETS_MANAGER_FUNCTION_ARN = envVars.SECRETS_MANAGER_FUNCTION_ARN;
+const { envVars } = GreengrassCommon;
+const { SECRETS_MANAGER_FUNCTION_ARN } = envVars;
 
+/**
+ * Constructs a service interface object. Each API operation is exposed as a function on service.
+ * @class
+ * @memberOf aws-greengrass-core-sdk
+ */
 class SecretsManager {
+    /**
+     * Constructs a service object. This object has one method for each API operation.
+     *
+     * @example <caption>Constructing a SecretsManager object</caption>
+     * var secretsmanager = new GG.SecretsManager();
+     */
     constructor() {
         this.lambda = new Lambda();
     }
 
+    /**
+     * Called when a response from the service is returned.
+     *
+     * @callback secretsManagerCallback
+     * @param err {Error} The error object returned from the request. Set to <tt>null</tt> if the request is successful.
+     * @param data {Object} The de-serialized data returned from the request. Set to <tt>null</tt> if a request error occurs.
+     * @param data.ARN {String} The ARN of the secret.
+     * @param data.Name {String} The friendly name of the secret.
+     * @param data.VersionId {String} The unique identifier of this version of the secret.
+     * @param data.SecretBinary {Buffer|TypedArray|Blob|String} The decrypted part of the protected secret information that was originally provided as binary data in the form of a byte array.
+     * The response parameter represents the binary data as a base64-encoded string.
+     * @param data.SecretString {String} The decrypted part of the protected secret information that was originally provided as a string.
+     * @param data.VersionStages {String[]} Specifies the secret version that you want to retrieve by the staging label attached to the version.
+     * <br/>Staging labels are used to keep track of different versions during the rotation process.
+     */
+
+    /**
+     * Retrieves a specific local secret value.
+     *
+     * @param params {Object}
+     * @param params.SecretId {String} Specifies the secret containing the version that you want to retrieve. You can specify either the Amazon Resource Name (ARN) or the friendly name of the secret.
+     * @param params.VersionStage {String} Specifies the secret version that you want to retrieve by the staging label attached to the version.
+     * <br/>Staging labels are used to keep track of different versions during the rotation process.
+     * @param callback {secretsManagerCallback} The callback.
+     *
+     * @example <caption>Retrieving a local secret value</caption>
+     * // This operation retrieves a local secret value
+     *
+     * var params = {
+     *   SecretId: "STRING_VALUE",
+     *   VersionStage: "STRING_VALUE"
+     * };
+     * secretsmanager.getSecretValue(params, function(err, data) {
+     *   if (err) console.log(err, err.stack); // an error occurred
+     *   else     console.log(data);           // successful response
+     * });
+     */
     getSecretValue(params, callback) {
         const secretId = Util.getParameter(params, KEY_SECRET_ID);
         const versionId = Util.getParameter(params, KEY_VERSION_ID);
@@ -41,8 +89,7 @@ class SecretsManager {
             return;
         }
 
-        const getSecretValueRequestBytes =
-            SecretsManager._generateGetSecretValueRequestBytes(secretId, versionId, versionStage);
+        const getSecretValueRequestBytes = SecretsManager._generateGetSecretValueRequestBytes(secretId, versionId, versionStage);
 
         const invokeParams = {
             FunctionName: SECRETS_MANAGER_FUNCTION_ARN,
@@ -53,11 +100,11 @@ class SecretsManager {
 
         this.lambda.invoke(invokeParams, (err, data) => {
             if (err) {
-                callback(err, null);                                        // an error occurred
+                callback(err, null); // an error occurred
             } else if (SecretsManager._is200Response(data.Payload)) {
-                callback(null, data.Payload);                               // successful response
+                callback(null, data.Payload); // successful response
             } else {
-                callback(new Error(JSON.stringify(data.Payload)), null);    // error response
+                callback(new Error(JSON.stringify(data.Payload)), null); // error response
             }
         });
     }
