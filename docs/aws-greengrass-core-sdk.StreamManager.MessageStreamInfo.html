@@ -1,0 +1,2996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: MessageStreamInfo</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: MessageStreamInfo</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a><a href="aws-greengrass-core-sdk.StreamManager.html">.StreamManager</a>~</span>MessageStreamInfo<span class="signature">(definition, storageStatus, exportStatuses)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Message stream information including its definition, storage status and export status</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="MessageStreamInfo"><span class="type-signature"></span>new MessageStreamInfo<span class="signature">(definition, storageStatus, exportStatuses)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>definition</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>storageStatus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Stream status including oldest/newest sequence number and total bytes</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>exportStatuses</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2912">line 2912</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="errorMessage"><span class="type-signature">(static) </span>_exportStatuses#errorMessage<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Error message from the last export attempt if it failed.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3369">line 3369</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="errorMessage"><span class="type-signature">(static) </span>_exportStatuses#errorMessage<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3375">line 3375</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="exportConfigIdentifier"><span class="type-signature">(static) </span>_exportStatuses#exportConfigIdentifier<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The unique export identifier.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3288">line 3288</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="exportConfigIdentifier"><span class="type-signature">(static) </span>_exportStatuses#exportConfigIdentifier<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3294">line 3294</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="lastExportedSequenceNumber"><span class="type-signature">(static) </span>_exportStatuses#lastExportedSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The sequence number of the last message which was successfully exported.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3315">line 3315</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="lastExportedSequenceNumber"><span class="type-signature">(static) </span>_exportStatuses#lastExportedSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3321">line 3321</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="lastExportTime"><span class="type-signature">(static) </span>_exportStatuses#lastExportTime<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The last time an export was attempted. Data is Unix epoch time in milliseconds.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3342">line 3342</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="lastExportTime"><span class="type-signature">(static) </span>_exportStatuses#lastExportTime<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3348">line 3348</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="newestSequenceNumber"><span class="type-signature">(static) </span>_storageStatus#newestSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The sequence number of the last appended message.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3125">line 3125</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="newestSequenceNumber"><span class="type-signature">(static) </span>_storageStatus#newestSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3131">line 3131</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="oldestSequenceNumber"><span class="type-signature">(static) </span>_storageStatus#oldestSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The sequence number of the first message which is still accessible in the stream.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3098">line 3098</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="oldestSequenceNumber"><span class="type-signature">(static) </span>_storageStatus#oldestSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3104">line 3104</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="totalBytes"><span class="type-signature">(static) </span>_storageStatus#totalBytes<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The current total size of the stream in bytes.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3152">line 3152</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="totalBytes"><span class="type-signature">(static) </span>_storageStatus#totalBytes<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3158">line 3158</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="definition"><span class="type-signature"></span>definition<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2941">line 2941</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="definition"><span class="type-signature"></span>definition<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2947">line 2947</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="exportStatuses"><span class="type-signature"></span>exportStatuses<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2994">line 2994</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="exportStatuses"><span class="type-signature"></span>exportStatuses<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3000">line 3000</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="storageStatus"><span class="type-signature"></span>storageStatus<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Stream status including oldest/newest sequence number and total bytes
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2968">line 2968</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="storageStatus"><span class="type-signature"></span>storageStatus<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2974">line 2974</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withErrorMessage"><span class="type-signature">(static) </span>_exportStatuses#withErrorMessage<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Error message from the last export attempt if it failed.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3386">line 3386</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withExportConfigIdentifier"><span class="type-signature">(static) </span>_exportStatuses#withExportConfigIdentifier<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The unique export identifier.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3305">line 3305</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withLastExportedSequenceNumber"><span class="type-signature">(static) </span>_exportStatuses#withLastExportedSequenceNumber<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The sequence number of the last message which was successfully exported.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3332">line 3332</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withLastExportTime"><span class="type-signature">(static) </span>_exportStatuses#withLastExportTime<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The last time an export was attempted. Data is Unix epoch time in milliseconds.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3359">line 3359</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withNewestSequenceNumber"><span class="type-signature">(static) </span>_storageStatus#withNewestSequenceNumber<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The sequence number of the last appended message.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3142">line 3142</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withOldestSequenceNumber"><span class="type-signature">(static) </span>_storageStatus#withOldestSequenceNumber<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The sequence number of the first message which is still accessible in the stream.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3115">line 3115</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withTotalBytes"><span class="type-signature">(static) </span>_storageStatus#withTotalBytes<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The current total size of the stream in bytes.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3169">line 3169</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withDefinition"><span class="type-signature"></span>withDefinition<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2958">line 2958</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withExportStatuses"><span class="type-signature"></span>withExportStatuses<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3014">line 3014</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withStorageStatus"><span class="type-signature"></span>withStorageStatus<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Stream status including oldest/newest sequence number and total bytes</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2985">line 2985</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">aws-greengrass-core-sdk.StreamManager.MessageStreamInfo</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Jan 16 2020 19:55:23 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
