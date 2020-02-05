@@ -69,7 +69,7 @@ c.onConnected(async () => {
                 const buf = Buffer.alloc(1);
                 buf.writeUInt8(Math.floor(Math.random() * 255), 0);
                 await c.appendMessage(STREAM_NAME, buf);
-            } finally {
+            } catch {
                 clearInterval(interval);
                 c.close();
             }
