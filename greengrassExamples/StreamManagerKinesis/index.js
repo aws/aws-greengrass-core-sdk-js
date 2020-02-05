@@ -74,7 +74,7 @@ c.onConnected(async () => {
                 c.close();
             }
         }, 1000);
-    } finally {
+    } catch {
         c.close();
     }
 });
