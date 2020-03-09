@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "outFile": "index.d.ts"
+  },
+  "include": [
+    "stream-manager/*.js",
+    "*.js"
+  ]
+}

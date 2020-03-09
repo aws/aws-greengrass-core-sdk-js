@@ -2,8 +2,14 @@
   "name": "aws-greengrass-core-sdk",
   "version": "1.6.0",
   "main": "index.js",
+  "scripts": {
+    "build:types": "find . -name '*.d.ts' -delete && tsc -p tsconfig.json"
+  },
   "dependencies": {
     "cbor": "5.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
   },
   "license": "Apache-2.0",
   "author": {
