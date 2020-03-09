@@ -1,6 +1,8 @@
 /*
  * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  */
+
+/** @type {Buffer} */
 const { Buffer } = require('buffer');
 
 const GreengrassCommon = require('aws-greengrass-common-js');
