@@ -21,7 +21,7 @@ always succeed on the first try and retry should be performed with care.
 
 5. Create a Lambda in the Lambda Console.
    Handler: index.handler
-   Runtime: Node.js 8.10
+   Runtime: Node.js 6.10
    Timeout: 3s
    Role: any basic execution role can be used here
 

@@ -24,7 +24,7 @@ exports.handler = function handler(event, context) {
     const clientContext = buff.toString('base64');
 
     const params = {
-        FunctionName: 'arn:<partition>:lambda:<region>:<accountId>:function:<targetFunctionName>:<targetFunctionQualifier>',
+        FunctionName: 'arn:aws:lambda:<region>:<accountId>:function:<targetFunctionName>:<targetFunctionQualifier>',
         InvocationType: 'RequestResponse',
         ClientContext: clientContext,
         Payload: JSON.stringify({ message: 'payload message' }),
