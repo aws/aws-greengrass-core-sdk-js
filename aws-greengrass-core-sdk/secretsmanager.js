@@ -38,14 +38,14 @@ class SecretsManager {
      *
      * @callback secretsManagerCallback
      * @param err {Error} The error object returned from the request. Set to <tt>null</tt> if the request is successful.
-     * @param data {Object} The de-serialized data returned from the request. Set to <tt>null</tt> if a request error occurs.
-     * @param data.ARN {String} The ARN of the secret.
-     * @param data.Name {String} The friendly name of the secret.
-     * @param data.VersionId {String} The unique identifier of this version of the secret.
-     * @param data.SecretBinary {Buffer|TypedArray|Blob|String} The decrypted part of the protected secret information that was originally provided as binary data in the form of a byte array.
+     * @param data {String} The json-serialized data returned from the request. Set to <tt>null</tt> if a request error occurs. This string can be parsed to get the Object with the following info:
+     * data.ARN {String} The ARN of the secret.
+     * data.Name {String} The friendly name of the secret.
+     * data.VersionId {String} The unique identifier of this version of the secret.
+     * data.SecretBinary {Buffer|TypedArray|Blob|String} The decrypted part of the protected secret information that was originally provided as binary data in the form of a byte array.
      * The response parameter represents the binary data as a base64-encoded string.
-     * @param data.SecretString {String} The decrypted part of the protected secret information that was originally provided as a string.
-     * @param data.VersionStages {String[]} Specifies the secret version that you want to retrieve by the staging label attached to the version.
+     * data.SecretString {String} The decrypted part of the protected secret information that was originally provided as a string.
+     * data.VersionStages {String[]} Specifies the secret version that you want to retrieve by the staging label attached to the version.
      * <br/>Staging labels are used to keep track of different versions during the rotation process.
      */
 

@@ -58,7 +58,7 @@ In Greengrass, you can send a context object in a JSON format to be passed to an
 
 ## Compatibility[¶](#compatibility "Permalink to this headline")
 
-As new features are added to AWS IoT Greengrass, newer versions of the AWS IoT Greengrass SDK may be incompatible with older versions of the AWS IoT Greengrass core. The following table lists the compatible SDKs for all GGC releases.
+As new features are added to AWS Greengrass, previous versions of the Greengrass SDK will be incompatible with newer versions of the AWS Greengrass core. The following table lists the compatible SDKs for all GGC releases.
 
 
 <table style="width:50%">
