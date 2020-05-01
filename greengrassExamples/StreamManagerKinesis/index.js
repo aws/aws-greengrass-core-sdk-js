@@ -51,7 +51,7 @@ c.onConnected(async () => {
 
         // Append 2 messages and print their sequence numbers
         console.log(`Successfully appended message to stream with sequence number ${await c.appendMessage(STREAM_NAME, Buffer.from('ABCDEFGHIJKLMNO', 'utf-8'))}`);
-        console.log(`Successfully appended message to stream with sequence number ${await c.appendMessage(STREAM_NAME, Buffer.from('PQRSTUVWXYZ', 'uft-8'))}`);
+        console.log(`Successfully appended message to stream with sequence number ${await c.appendMessage(STREAM_NAME, Buffer.from('PQRSTUVWXYZ', 'utf-8'))}`);
 
         // Try reading the 2 messages we just appended and print them out
         console.log(`Successfully read 2 messages: ${
@@ -69,12 +69,12 @@ c.onConnected(async () => {
                 const buf = Buffer.alloc(1);
                 buf.writeUInt8(Math.floor(Math.random() * 255), 0);
                 await c.appendMessage(STREAM_NAME, buf);
-            } finally {
+            } catch {
                 clearInterval(interval);
                 c.close();
             }
         }, 1000);
-    } finally {
+    } catch {
         c.close();
     }
 });
