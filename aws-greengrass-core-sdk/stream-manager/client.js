@@ -34,16 +34,16 @@ const removeFromArray = (arr, f) => {
  * });
  */
 class StreamManagerClient {
-    #closed = false;
+    closed = false;
 
     /**
      * @type {module:net.Socket}
      */
-    #socket = null;
+    socket = null;
 
-    #authToken = null;
+    authToken = null;
 
-    #connected = false;
+    connected = false;
 
     /**
      * @typedef Logger
@@ -56,15 +56,15 @@ class StreamManagerClient {
     /**
      * @type {?Logger}
      */
-    #logger = null;
+    logger = null;
 
-    #requestMap = {};
+    requestMap = {};
 
     connectCallbacks = [];
 
     errorCallbacks = [];
 
-    #defaultParams = {
+    defaultParams = {
         port: null,
         host: '127.0.0.1',
         onConnectCb: null,
@@ -93,7 +93,7 @@ class StreamManagerClient {
             port, host, onConnectCb, onErrorCb, logger,
         } = {
             // Apply defaults
-            ...this.#defaultParams,
+            ...this.defaultParams,
             // Then possibly override them with what the user set
             ...opts,
         };
@@ -101,10 +101,10 @@ class StreamManagerClient {
         if (port === null) {
             port = parseInt(process.env.STREAM_MANAGER_SERVER_PORT || 8088, 10);
         }
-        this.#logger = logger;
+        this.logger = logger;
         this.port = port;
         this.host = host;
-        this.#authToken = process.env.AWS_CONTAINER_AUTHORIZATION_TOKEN || null;
+        this.authToken = process.env.AWS_CONTAINER_AUTHORIZATION_TOKEN || null;
 
         if (typeof onConnectCb === 'function') {
             this.onConnected(onConnectCb);
@@ -119,10 +119,10 @@ class StreamManagerClient {
     async __connect() {
         try {
             await new Promise((resolve, reject) => {
-                if (this.#closed) {
+                if (this.closed) {
                     return reject(new exceptions.StreamManagerException('Client is closed and cannot be reopened'));
                 }
-                if (this.#connected) {
+                if (this.connected) {
                     return resolve();
                 }
 
@@ -136,13 +136,13 @@ class StreamManagerClient {
                 }, async () => {
                     try {
                         // Connection started
-                        this.#logger.debug(`Opening connection to ${this.host}:${this.port}`);
-                        this.#connected = false;
+                        this.logger.debug(`Opening connection to ${this.host}:${this.port}`);
+                        this.connected = false;
 
                         const request = new smData.ConnectRequest()
                             .withProtocolVersion(PROTOCOL_VERSION)
                             .withSdkVersion(SDK_VERSION)
-                            .withAuthToken(this.#authToken)
+                            .withAuthToken(this.authToken)
                             .withRequestId(util.uuidv4());
 
                         // Write the connect version
@@ -156,7 +156,7 @@ class StreamManagerClient {
 
                         await this.__read(newSock);
                         // Only now that we're connected should we set/replace the socket
-                        this.#socket = newSock;
+                        this.socket = newSock;
                         resolve();
                     } catch (errors) {
                         reject(errors);
@@ -164,28 +164,28 @@ class StreamManagerClient {
                 });
 
                 newSock.on('error', (e) => {
-                    this.#logger.error(e);
+                    this.logger.error(e);
                     this.errorCallbacks.forEach((f) => f(e));
                     newSock.end();
 
-                    if (!this.#connected) {
+                    if (!this.connected) {
                         reject(e);
                     }
                 });
 
                 newSock.on('end', () => {
-                    this.#logger.info('Socket is ending');
+                    this.logger.info('Socket is ending');
                 });
 
                 newSock.on('close', () => {
                     newSock.destroy();
-                    this.#connected = false;
+                    this.connected = false;
                 });
             });
 
             // Set us to be in connected mode
-            this.#connected = true;
-            this.#logger.info('Successfully connected');
+            this.connected = true;
+            this.logger.info('Successfully connected');
             this.connectCallbacks.forEach((f) => {
                 try {
                     f();
@@ -196,7 +196,7 @@ class StreamManagerClient {
                 }
             });
         } catch (e) {
-            this.#logger.error(e);
+            this.logger.error(e);
             this.errorCallbacks.forEach((f) => f(e));
             throw e;
         }
@@ -204,7 +204,7 @@ class StreamManagerClient {
 
     __readSocket(n, socket, resolve = null, reject = null) {
         if (resolve && reject) {
-            if (this.#closed) {
+            if (this.closed) {
                 reject();
             }
 
@@ -220,22 +220,22 @@ class StreamManagerClient {
         }
 
         return new Promise((res, rej) => {
-            if (this.#closed) {
+            if (this.closed) {
                 rej();
             }
             this.__readSocket(n, socket, res, rej);
         });
     }
 
-    async __read(socket = this.#socket) {
-        if (this.#connected) {
+    async __read(socket = this.socket) {
+        if (this.connected) {
             const frame = await this.__readMessageFrame(socket);
             this.__handleReadResponse(cbor.decodeFirstSync(frame.payload), frame);
         } else {
             // Read connect version
             const connectResponseVersion = util.intFromBuffer(await this.__readSocket(1, socket));
             if (connectResponseVersion !== CONNECT_VERSION) {
-                this.#logger.error('Unexpected response from the server, Connect version:', connectResponseVersion);
+                this.logger.error('Unexpected response from the server, Connect version:', connectResponseVersion);
                 throw new exceptions.ConnectFailedException('Failed to establish connection with the server');
             }
 
@@ -245,14 +245,14 @@ class StreamManagerClient {
             if (response.operation === smData.Operation.ConnectResponse) {
                 const payload = cbor.decodeFirstSync(response.payload);
                 response = smData.ConnectResponse.fromMap(payload);
-                this.#logger.debug('Received ConnectResponse from server:', response);
+                this.logger.debug('Received ConnectResponse from server:', response);
             } else {
-                this.#logger.error('Received data with unexpected operation', response.operation);
+                this.logger.error('Received data with unexpected operation', response.operation);
                 throw new exceptions.ConnectFailedException('Failed to establish connection with the server');
             }
 
             if (response.status !== smData.ResponseStatusCode.Success) {
-                this.#logger.error('Received ConnectResponse with unexpected status', response.status);
+                this.logger.error('Received ConnectResponse with unexpected status', response.status);
                 throw new exceptions.ConnectFailedException('Failed to establish connection with the server');
             }
         }
@@ -263,7 +263,7 @@ class StreamManagerClient {
                 await this.__read();
             } catch (e) {
                 // Only bubble up the errors when we're actually connected and not closed
-                if (this.#connected && !this.#closed) {
+                if (this.connected && !this.closed) {
                     this.errorCallbacks.forEach((f) => f(e));
                 }
             }
@@ -276,7 +276,7 @@ class StreamManagerClient {
 
         let op = smData.Operation.fromMap(operation);
         if (typeof op === 'undefined') {
-            this.#logger.error('Found unknown operation', operation);
+            this.logger.error('Found unknown operation', operation);
             op = smData.Operation.Unknown;
         }
 
@@ -286,45 +286,45 @@ class StreamManagerClient {
     __handleReadResponse(data, frame) {
         if (frame.operation === smData.Operation.ReadMessagesResponse) {
             const response = smData.ReadMessagesResponse.fromMap(data);
-            this.#logger.debug('Received ReadMessagesResponse from server');
-            this.#requestMap[response.requestId](response);
+            this.logger.debug('Received ReadMessagesResponse from server');
+            this.requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.CreateMessageStreamResponse) {
             const response = smData.CreateMessageStreamResponse.fromMap(data);
-            this.#logger.debug('Received CreateMessageStreamResponse from server', frame);
-            this.#requestMap[response.requestId](response);
+            this.logger.debug('Received CreateMessageStreamResponse from server', frame);
+            this.requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.DeleteMessageStreamResponse) {
             const response = smData.DeleteMessageStreamResponse.fromMap(data);
-            this.#logger.debug('Received DeleteMessageStreamResponse from server', frame);
-            this.#requestMap[response.requestId](response);
+            this.logger.debug('Received DeleteMessageStreamResponse from server', frame);
+            this.requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.AppendMessageResponse) {
             const response = smData.AppendMessageResponse.fromMap(data);
-            this.#logger.debug('Received AppendMessageResponse from server', frame);
-            this.#requestMap[response.requestId](response);
+            this.logger.debug('Received AppendMessageResponse from server', frame);
+            this.requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.ListStreamsResponse) {
             const response = smData.ListStreamsResponse.fromMap(data);
-            this.#logger.debug('Received ListStreamsResponse from server', frame);
-            this.#requestMap[response.requestId](response);
+            this.logger.debug('Received ListStreamsResponse from server', frame);
+            this.requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.DescribeMessageStreamResponse) {
             const response = smData.DescribeMessageStreamResponse.fromMap(data);
-            this.#logger.debug('Received DescribeMessageStreamResponse from server', frame);
-            this.#requestMap[response.requestId](response);
+            this.logger.debug('Received DescribeMessageStreamResponse from server', frame);
+            this.requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.Unknown) {
-            this.#logger.error('Received response with unknown operation from server', frame);
+            this.logger.error('Received response with unknown operation from server', frame);
             try {
                 const { requestId } = cbor.decodeFirstSync(frame.payload);
-                this.#requestMap[requestId](frame);
+                this.requestMap[requestId](frame);
             } catch {
                 // We tried our best to figure out the request id, but it failed.
                 // We already logged the unknown smData.Operation, so there's nothing
                 // else we can do at this point
             }
         } else {
-            this.#logger.error('Received data with unhandled operation', frame.operation);
+            this.logger.error('Received data with unhandled operation', frame.operation);
         }
     }
 
     async _sendAndReceive(operation, data) {
-        if (this.#closed) {
+        if (this.closed) {
             throw new exceptions.StreamManagerException('Client is closed and cannot be reopened');
         }
 
@@ -339,14 +339,14 @@ class StreamManagerClient {
         }
 
         // If we're not connected, immediately try to reconnect
-        if (!this.#connected) {
+        if (!this.connected) {
             await this.__connect();
         }
 
         const promise = new Promise(((resolve, reject) => {
-            this.#requestMap[data.requestId] = (result) => {
+            this.requestMap[data.requestId] = (result) => {
                 // Drop async queue from request map
-                delete this.#requestMap[data.requestId];
+                delete this.requestMap[data.requestId];
                 if (result instanceof smData.MessageFrame && result.operation === smData.Operation.Unknown) {
                     reject(new exceptions.ClientException('Received response with unknown operation from server'));
                 }
@@ -358,8 +358,8 @@ class StreamManagerClient {
         // Write request to socket
         const frame = new smData.MessageFrame(operation, cbor.encode(data.asMap()));
         const byteFrame = util.encodeFrame(frame);
-        this.#socket.write(byteFrame.header);
-        this.#socket.write(byteFrame.payload);
+        this.socket.write(byteFrame.header);
+        this.socket.write(byteFrame.payload);
 
         return promise;
     }
@@ -487,7 +487,7 @@ class StreamManagerClient {
      * @param f {function}
      */
     onConnected(f) {
-        if (this.#connected) {
+        if (this.connected) {
             f();
         } else {
             this.connectCallbacks.push(f);
@@ -506,10 +506,10 @@ class StreamManagerClient {
      * Close the connection
      */
     close() {
-        if (this.#socket) {
-            this.#socket.end();
+        if (this.socket) {
+            this.socket.end();
         }
-        this.#closed = true;
+        this.closed = true;
     }
 }
 
