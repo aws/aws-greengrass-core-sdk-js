@@ -1,117 +1,49 @@
 /**
- * StrategyOnFull is used in the MessageStreamDefinition when creating a stream.
-   It defines the behavior when the stream has reached the maximum size.
-   RejectNewData: any append message request after the stream is full will be rejected with an exception.
-   OverwriteOldestData: the oldest stream segments will be deleted until there is room for the new message.
+ * (Internal Only) Version information.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
  */
-class StrategyOnFull {
+class VersionInfo {
 
     #value = null;
     constructor(value = null) {
-        if (!(value in Object.values(StrategyOnFull.options))) {
+        if (!Object.values(VersionInfo.options).includes(value)) {
             throw new Error("Value must be one of the enumerated options");
         }
         this.#value = value;
     }
 
     static fromMap(d) {
-        return StrategyOnFull[StrategyOnFull.optionsFlipped[d]];
+        return VersionInfo[VersionInfo.optionsFlipped[d]];
     }
 
     asMap() {
         return this.#value;
     }
 };
-Object.defineProperty(StrategyOnFull, "options", {
+Object.defineProperty(VersionInfo, "options", {
     value: {
-        RejectNewData: 0,
-        OverwriteOldestData: 1,
+        PROTOCOL_VERSION: "1.1.0",
     }
 });
-Object.defineProperty(StrategyOnFull, "optionsFlipped", {
+Object.defineProperty(VersionInfo, "optionsFlipped", {
     value: {
-        0: "RejectNewData",
-        1: "OverwriteOldestData",
+        "1.1.0": "PROTOCOL_VERSION",
     }
 });
 
 /**
- * @member {aws-greengrass-core-sdk.StreamManager.StrategyOnFull} RejectNewData
- * @memberOf aws-greengrass-core-sdk.StreamManager.StrategyOnFull#
+ * @member {aws-greengrass-core-sdk.StreamManager.VersionInfo} PROTOCOL_VERSION
+ * @memberOf aws-greengrass-core-sdk.StreamManager.VersionInfo#
  * @readonly
  */
-Object.defineProperty(StrategyOnFull, "RejectNewData", {
-    value: new StrategyOnFull(0)
-});
-/**
- * @member {aws-greengrass-core-sdk.StreamManager.StrategyOnFull} OverwriteOldestData
- * @memberOf aws-greengrass-core-sdk.StreamManager.StrategyOnFull#
- * @readonly
- */
-Object.defineProperty(StrategyOnFull, "OverwriteOldestData", {
-    value: new StrategyOnFull(1)
+Object.defineProperty(VersionInfo, "PROTOCOL_VERSION", {
+    value: new VersionInfo("1.1.0")
 });
 
 /**
- * Stream persistence. If set to File, the file system will be used to persist messages long-term and is resilient to restarts.
-   Memory should be used when performance matters more than durability as it only stores the stream in memory and never writes to the disk.
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class Persistence {
-
-    #value = null;
-    constructor(value = null) {
-        if (!(value in Object.values(Persistence.options))) {
-            throw new Error("Value must be one of the enumerated options");
-        }
-        this.#value = value;
-    }
-
-    static fromMap(d) {
-        return Persistence[Persistence.optionsFlipped[d]];
-    }
-
-    asMap() {
-        return this.#value;
-    }
-};
-Object.defineProperty(Persistence, "options", {
-    value: {
-        File: 0,
-        Memory: 1,
-    }
-});
-Object.defineProperty(Persistence, "optionsFlipped", {
-    value: {
-        0: "File",
-        1: "Memory",
-    }
-});
-
-/**
- * @member {aws-greengrass-core-sdk.StreamManager.Persistence} File
- * @memberOf aws-greengrass-core-sdk.StreamManager.Persistence#
- * @readonly
- */
-Object.defineProperty(Persistence, "File", {
-    value: new Persistence(0)
-});
-/**
- * @member {aws-greengrass-core-sdk.StreamManager.Persistence} Memory
- * @memberOf aws-greengrass-core-sdk.StreamManager.Persistence#
- * @readonly
- */
-Object.defineProperty(Persistence, "Memory", {
-    value: new Persistence(1)
-});
-
-/**
- * (Internal Only) Request object to connect to the service
+ * (Internal Only) Request object to connect to the service.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -119,18 +51,21 @@ Object.defineProperty(Persistence, "Memory", {
 class ConnectRequest {
     #__requestId = null;
     #__protocolVersion = null;
+    #__otherSupportedProtocolVersions = null;
     #__sdkVersion = null;
     #__authToken = null;
 
     /**
      * @param requestId {String} 
      * @param protocolVersion {String} 
+     * @param otherSupportedProtocolVersions {String[]} 
      * @param sdkVersion {String} 
      * @param authToken {String} 
      */
     constructor(
         requestId = null,
         protocolVersion = null,
+        otherSupportedProtocolVersions = null,
         sdkVersion = null,
         authToken = null,
     ) {
@@ -140,6 +75,13 @@ class ConnectRequest {
 
         if (protocolVersion !== null && !(typeof protocolVersion === "string")) {
             throw new Error("protocolVersion must be String");
+        }
+
+        if (otherSupportedProtocolVersions !== null && !(otherSupportedProtocolVersions instanceof Array)) {
+            throw new Error("otherSupportedProtocolVersions must be Array");
+        }
+        if (otherSupportedProtocolVersions !== null && !otherSupportedProtocolVersions.every((v) => typeof v === "string")) {
+            throw new Error("otherSupportedProtocolVersions array values must be String");
         }
 
         if (sdkVersion !== null && !(typeof sdkVersion === "string")) {
@@ -152,6 +94,7 @@ class ConnectRequest {
 
         this.#__requestId = requestId;
         this.#__protocolVersion = protocolVersion;
+        this.#__otherSupportedProtocolVersions = otherSupportedProtocolVersions;
         this.#__sdkVersion = sdkVersion;
         this.#__authToken = authToken;
     }
@@ -205,6 +148,35 @@ class ConnectRequest {
      */
     withProtocolVersion(value) {
         this.protocolVersion = value;
+        return this;
+    }
+
+    /**
+     * @returns {String[]}
+     
+     */
+    get otherSupportedProtocolVersions() {
+        return this.#__otherSupportedProtocolVersions;
+    }
+    /**
+     * @param value {String[]} 
+     */
+    set otherSupportedProtocolVersions(value) {
+        if (value !== null && !(value instanceof Array)) {
+            throw new Error("otherSupportedProtocolVersions must be Array");
+        }
+        if (value !== null && !value.every((v) => typeof v === "string")) {
+            throw new Error("otherSupportedProtocolVersions array values must be String");
+        }
+
+        this.#__otherSupportedProtocolVersions = value;
+    }
+    /**
+     * @param value {String[]} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.ConnectRequest}
+     */
+    withOtherSupportedProtocolVersions(value) {
+        this.otherSupportedProtocolVersions = value;
         return this;
     }
 
@@ -268,6 +240,12 @@ class ConnectRequest {
         if ("protocolVersion" in d) {
             ret.protocolVersion = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["protocolVersion"]) : d["protocolVersion"];
         }
+        if ("otherSupportedProtocolVersions" in d) {
+            ret.otherSupportedProtocolVersions = d["otherSupportedProtocolVersions"].reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(v) : v);
+                return acc;
+            }, []);
+        }
         if ("sdkVersion" in d) {
             ret.sdkVersion = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["sdkVersion"]) : d["sdkVersion"];
         }
@@ -284,6 +262,12 @@ class ConnectRequest {
         }
         if (this.protocolVersion !== null) {
             d["protocolVersion"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.protocolVersion), "asMap") ? this.protocolVersion.asMap() : this.protocolVersion;
+        }
+        if (this.otherSupportedProtocolVersions !== null) {
+            d["otherSupportedProtocolVersions"] = this.otherSupportedProtocolVersions.reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(v), "asMap") ? v.asMap() : v);
+                return acc;
+            }, []);
         }
         if (this.sdkVersion !== null) {
             d["sdkVersion"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sdkVersion), "asMap") ? this.sdkVersion.asMap() : this.sdkVersion;
@@ -304,6 +288,10 @@ Object.defineProperty(ConnectRequest, "typesMap", {
         protocolVersion: {
             'type': String,
             'subtype': null
+        },
+        otherSupportedProtocolVersions: {
+            'type': Array,
+            'subtype': String
         },
         sdkVersion: {
             'type': String,
@@ -327,6 +315,9 @@ Object.defineProperty(ConnectRequest, "validationsMap", {
         },
         'protocolVersion': {
             'required': true,
+        },
+        'otherSupportedProtocolVersions': {
+            'required': false,
         },
         'sdkVersion': {
             'required': false,
@@ -355,6 +346,9 @@ Object.defineProperty(ConnectRequest, "validationsMap", {
    NotEnoughMessages: There is not enough messages to return.
    MessageStoreReadError: Read messages encountered an error.
    OutOfMemoryError: Server ran out of memory.
+   UpdateFailed: Update operation failed.
+   UpdateNotAllowed: One or more fields are not allowed to be updated.
+   UnknownOperation: Client request is not recognized by the server.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -363,7 +357,7 @@ class ResponseStatusCode {
 
     #value = null;
     constructor(value = null) {
-        if (!(value in Object.values(ResponseStatusCode.options))) {
+        if (!Object.values(ResponseStatusCode.options).includes(value)) {
             throw new Error("Value must be one of the enumerated options");
         }
         this.#value = value;
@@ -395,6 +389,9 @@ Object.defineProperty(ResponseStatusCode, "options", {
         NotEnoughMessages: 13,
         MessageStoreReadError: 14,
         OutOfMemoryError: 15,
+        UpdateFailed: 16,
+        UpdateNotAllowed: 17,
+        UnknownOperation: 18,
     }
 });
 Object.defineProperty(ResponseStatusCode, "optionsFlipped", {
@@ -415,6 +412,9 @@ Object.defineProperty(ResponseStatusCode, "optionsFlipped", {
         13: "NotEnoughMessages",
         14: "MessageStoreReadError",
         15: "OutOfMemoryError",
+        16: "UpdateFailed",
+        17: "UpdateNotAllowed",
+        18: "UnknownOperation",
     }
 });
 
@@ -546,9 +546,33 @@ Object.defineProperty(ResponseStatusCode, "MessageStoreReadError", {
 Object.defineProperty(ResponseStatusCode, "OutOfMemoryError", {
     value: new ResponseStatusCode(15)
 });
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} UpdateFailed
+ * @memberOf aws-greengrass-core-sdk.StreamManager.ResponseStatusCode#
+ * @readonly
+ */
+Object.defineProperty(ResponseStatusCode, "UpdateFailed", {
+    value: new ResponseStatusCode(16)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} UpdateNotAllowed
+ * @memberOf aws-greengrass-core-sdk.StreamManager.ResponseStatusCode#
+ * @readonly
+ */
+Object.defineProperty(ResponseStatusCode, "UpdateNotAllowed", {
+    value: new ResponseStatusCode(17)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} UnknownOperation
+ * @memberOf aws-greengrass-core-sdk.StreamManager.ResponseStatusCode#
+ * @readonly
+ */
+Object.defineProperty(ResponseStatusCode, "UnknownOperation", {
+    value: new ResponseStatusCode(18)
+});
 
 /**
- * Internal Only
+ * Internal Only.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -928,7 +952,7 @@ Object.defineProperty(ConnectResponse, "validationsMap", {
 });
 
 /**
- * Internal Only
+ * Internal Only.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -937,7 +961,7 @@ class Operation {
 
     #value = null;
     constructor(value = null) {
-        if (!(value in Object.values(Operation.options))) {
+        if (!Object.values(Operation.options).includes(value)) {
             throw new Error("Value must be one of the enumerated options");
         }
         this.#value = value;
@@ -968,6 +992,9 @@ Object.defineProperty(Operation, "options", {
         ListStreamsResponse: 12,
         DescribeMessageStream: 13,
         DescribeMessageStreamResponse: 14,
+        UpdateMessageStream: 15,
+        UpdateMessageStreamResponse: 16,
+        UnknownOperationError: 17,
     }
 });
 Object.defineProperty(Operation, "optionsFlipped", {
@@ -987,6 +1014,9 @@ Object.defineProperty(Operation, "optionsFlipped", {
         12: "ListStreamsResponse",
         13: "DescribeMessageStream",
         14: "DescribeMessageStreamResponse",
+        15: "UpdateMessageStream",
+        16: "UpdateMessageStreamResponse",
+        17: "UnknownOperationError",
     }
 });
 
@@ -1110,9 +1140,33 @@ Object.defineProperty(Operation, "DescribeMessageStream", {
 Object.defineProperty(Operation, "DescribeMessageStreamResponse", {
     value: new Operation(14)
 });
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Operation} UpdateMessageStream
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Operation#
+ * @readonly
+ */
+Object.defineProperty(Operation, "UpdateMessageStream", {
+    value: new Operation(15)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Operation} UpdateMessageStreamResponse
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Operation#
+ * @readonly
+ */
+Object.defineProperty(Operation, "UpdateMessageStreamResponse", {
+    value: new Operation(16)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Operation} UnknownOperationError
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Operation#
+ * @readonly
+ */
+Object.defineProperty(Operation, "UnknownOperationError", {
+    value: new Operation(17)
+});
 
 /**
- * Internal Only
+ * Internal Only.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -1243,6 +1297,1388 @@ Object.defineProperty(MessageFrame, "validationsMap", {
 });
 
 /**
+ * The type of event, which determines how to interpret the status payload.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class EventType {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(EventType.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return EventType[EventType.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(EventType, "options", {
+    value: {
+        S3Task: 0,
+    }
+});
+Object.defineProperty(EventType, "optionsFlipped", {
+    value: {
+        0: "S3Task",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.EventType} S3Task
+ * @memberOf aws-greengrass-core-sdk.StreamManager.EventType#
+ * @readonly
+ */
+Object.defineProperty(EventType, "S3Task", {
+    value: new EventType(0)
+});
+
+/**
+ * The status of the event.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class Status {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(Status.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return Status[Status.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(Status, "options", {
+    value: {
+        Success: 0,
+        Failure: 1,
+        InProgress: 2,
+        Warning: 3,
+        Canceled: 4,
+    }
+});
+Object.defineProperty(Status, "optionsFlipped", {
+    value: {
+        0: "Success",
+        1: "Failure",
+        2: "InProgress",
+        3: "Warning",
+        4: "Canceled",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Status} Success
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Status#
+ * @readonly
+ */
+Object.defineProperty(Status, "Success", {
+    value: new Status(0)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Status} Failure
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Status#
+ * @readonly
+ */
+Object.defineProperty(Status, "Failure", {
+    value: new Status(1)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Status} InProgress
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Status#
+ * @readonly
+ */
+Object.defineProperty(Status, "InProgress", {
+    value: new Status(2)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Status} Warning
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Status#
+ * @readonly
+ */
+Object.defineProperty(Status, "Warning", {
+    value: new Status(3)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Status} Canceled
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Status#
+ * @readonly
+ */
+Object.defineProperty(Status, "Canceled", {
+    value: new Status(4)
+});
+
+/**
+ * Defines the verbosity of status messages in a status-stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class StatusLevel {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(StatusLevel.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return StatusLevel[StatusLevel.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(StatusLevel, "options", {
+    value: {
+        ERROR: 0,
+        WARN: 1,
+        INFO: 2,
+        DEBUG: 3,
+        TRACE: 4,
+    }
+});
+Object.defineProperty(StatusLevel, "optionsFlipped", {
+    value: {
+        0: "ERROR",
+        1: "WARN",
+        2: "INFO",
+        3: "DEBUG",
+        4: "TRACE",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StatusLevel} ERROR
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StatusLevel#
+ * @readonly
+ */
+Object.defineProperty(StatusLevel, "ERROR", {
+    value: new StatusLevel(0)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StatusLevel} WARN
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StatusLevel#
+ * @readonly
+ */
+Object.defineProperty(StatusLevel, "WARN", {
+    value: new StatusLevel(1)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StatusLevel} INFO
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StatusLevel#
+ * @readonly
+ */
+Object.defineProperty(StatusLevel, "INFO", {
+    value: new StatusLevel(2)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StatusLevel} DEBUG
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StatusLevel#
+ * @readonly
+ */
+Object.defineProperty(StatusLevel, "DEBUG", {
+    value: new StatusLevel(3)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StatusLevel} TRACE
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StatusLevel#
+ * @readonly
+ */
+Object.defineProperty(StatusLevel, "TRACE", {
+    value: new StatusLevel(4)
+});
+
+/**
+ * S3 Task definition containing all the information necessary to export the data to S3. This will contain the S3 bucket and key as well as the file's URL where the data is stored.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class S3ExportTaskDefinition {
+    #__inputUrl = null;
+    #__bucket = null;
+    #__key = null;
+    #__userMetadata = null;
+
+    /**
+     * @param inputUrl {String} The URL of the file that contains the data to upload. The file should be local on the disk.
+     * @param bucket {String} The name of the S3 bucket that this file should be uploaded to.
+     * @param key {String} The key for the S3 object that this file should be uploaded to.
+       The string can have placeholder expressions which are resolved at upload time. Valid expressions are strings that are valid Java DateTimeFormatter strings. See https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+       Example: myKeyNamePrefix/!{timestamp:yyyy/MM/dd}/myKeyNameSuffix.
+     * @param userMetadata {Object} User metadata. For key of a user metadata, callers should not include the internal "x-amz-meta-" prefix. Keys are case insensitive and will appear as lowercase strings on S3, even if they were originally specified with uppercase strings. Reserved key names start with "$aws-gg-" prefix.
+     */
+    constructor(
+        inputUrl = null,
+        bucket = null,
+        key = null,
+        userMetadata = null,
+    ) {
+        if (inputUrl !== null && !(typeof inputUrl === "string")) {
+            throw new Error("inputUrl must be String");
+        }
+
+        if (bucket !== null && !(typeof bucket === "string")) {
+            throw new Error("bucket must be String");
+        }
+
+        if (key !== null && !(typeof key === "string")) {
+            throw new Error("key must be String");
+        }
+
+        if (userMetadata !== null && !(userMetadata instanceof Object)) {
+            throw new Error("userMetadata must be Object");
+        }
+
+        this.#__inputUrl = inputUrl;
+        this.#__bucket = bucket;
+        this.#__key = key;
+        this.#__userMetadata = userMetadata;
+    }
+
+    /**
+     * The URL of the file that contains the data to upload. The file should be local on the disk.
+     * @returns {String}
+     
+     */
+    get inputUrl() {
+        return this.#__inputUrl;
+    }
+    /**
+     * @param value {String} The URL of the file that contains the data to upload. The file should be local on the disk.
+     */
+    set inputUrl(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("inputUrl must be String");
+        }
+
+        this.#__inputUrl = value;
+    }
+    /**
+     * @param value {String} The URL of the file that contains the data to upload. The file should be local on the disk.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition}
+     */
+    withInputUrl(value) {
+        this.inputUrl = value;
+        return this;
+    }
+
+    /**
+     * The name of the S3 bucket that this file should be uploaded to.
+     * @returns {String}
+     
+     */
+    get bucket() {
+        return this.#__bucket;
+    }
+    /**
+     * @param value {String} The name of the S3 bucket that this file should be uploaded to.
+     */
+    set bucket(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("bucket must be String");
+        }
+
+        this.#__bucket = value;
+    }
+    /**
+     * @param value {String} The name of the S3 bucket that this file should be uploaded to.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition}
+     */
+    withBucket(value) {
+        this.bucket = value;
+        return this;
+    }
+
+    /**
+     * The key for the S3 object that this file should be uploaded to.
+       The string can have placeholder expressions which are resolved at upload time. Valid expressions are strings that are valid Java DateTimeFormatter strings. See https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+       Example: myKeyNamePrefix/!{timestamp:yyyy/MM/dd}/myKeyNameSuffix.
+     * @returns {String}
+
+     */
+    get key() {
+        return this.#__key;
+    }
+    /**
+     * @param value {String} The key for the S3 object that this file should be uploaded to.
+       The string can have placeholder expressions which are resolved at upload time. Valid expressions are strings that are valid Java DateTimeFormatter strings. See https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+       Example: myKeyNamePrefix/!{timestamp:yyyy/MM/dd}/myKeyNameSuffix.
+     */
+    set key(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("key must be String");
+        }
+
+        this.#__key = value;
+    }
+    /**
+     * @param value {String} The key for the S3 object that this file should be uploaded to.
+       The string can have placeholder expressions which are resolved at upload time. Valid expressions are strings that are valid Java DateTimeFormatter strings. See https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+       Example: myKeyNamePrefix/!{timestamp:yyyy/MM/dd}/myKeyNameSuffix.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition}
+     */
+    withKey(value) {
+        this.key = value;
+        return this;
+    }
+
+    /**
+     * User metadata. For key of a user metadata, callers should not include the internal "x-amz-meta-" prefix. Keys are case insensitive and will appear as lowercase strings on S3, even if they were originally specified with uppercase strings. Reserved key names start with "$aws-gg-" prefix.
+     * @returns {Object}
+     
+     */
+    get userMetadata() {
+        return this.#__userMetadata;
+    }
+    /**
+     * @param value {Object} User metadata. For key of a user metadata, callers should not include the internal "x-amz-meta-" prefix. Keys are case insensitive and will appear as lowercase strings on S3, even if they were originally specified with uppercase strings. Reserved key names start with "$aws-gg-" prefix.
+     */
+    set userMetadata(value) {
+        if (value !== null && !(value instanceof Object)) {
+            throw new Error("userMetadata must be Object");
+        }
+
+        this.#__userMetadata = value;
+    }
+    /**
+     * @param value {Object} User metadata. For key of a user metadata, callers should not include the internal "x-amz-meta-" prefix. Keys are case insensitive and will appear as lowercase strings on S3, even if they were originally specified with uppercase strings. Reserved key names start with "$aws-gg-" prefix.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition}
+     */
+    withUserMetadata(value) {
+        this.userMetadata = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new S3ExportTaskDefinition();
+        if ("inputUrl" in d) {
+            ret.inputUrl = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["inputUrl"]) : d["inputUrl"];
+        }
+        if ("bucket" in d) {
+            ret.bucket = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["bucket"]) : d["bucket"];
+        }
+        if ("key" in d) {
+            ret.key = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["key"]) : d["key"];
+        }
+        if ("userMetadata" in d) {
+            ret.userMetadata = Object.prototype.hasOwnProperty.call(Object, "fromMap") ? Object.fromMap(d["userMetadata"]) : d["userMetadata"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.inputUrl !== null) {
+            d["inputUrl"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.inputUrl), "asMap") ? this.inputUrl.asMap() : this.inputUrl;
+        }
+        if (this.bucket !== null) {
+            d["bucket"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.bucket), "asMap") ? this.bucket.asMap() : this.bucket;
+        }
+        if (this.key !== null) {
+            d["key"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.key), "asMap") ? this.key.asMap() : this.key;
+        }
+        if (this.userMetadata !== null) {
+            d["userMetadata"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.userMetadata), "asMap") ? this.userMetadata.asMap() : this.userMetadata;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(S3ExportTaskDefinition, "typesMap", {
+    value: {
+        inputUrl: {
+            'type': String,
+            'subtype': null
+        },
+        bucket: {
+            'type': String,
+            'subtype': null
+        },
+        key: {
+            'type': String,
+            'subtype': null
+        },
+        userMetadata: {
+            'type': Object,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(S3ExportTaskDefinition, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(S3ExportTaskDefinition, "validationsMap", {
+    value: {
+        'inputUrl': {
+            'required': true,
+        },
+        'bucket': {
+            'required': true,
+            'minLength': 3,
+            'maxLength': 63,
+            'pattern': /(?=^.{3,63}$)(?!^(\d+\.)+\d+$)(^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$)/,
+        },
+        'key': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 1024,
+            'pattern': /^([^\\\{ \}%\`\[\]\"\'\>\<\~\#\^\?\|]|!\{[a-zA-Z]+:[a-zA-Z\/]+\})*$/,
+        },
+        'userMetadata': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * Context associated with a status message. Describes which stream, export config, message, the status is associated with.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class StatusContext {
+    #__s3ExportTaskDefinition = null;
+    #__exportIdentifier = null;
+    #__streamName = null;
+    #__sequenceNumber = null;
+
+    /**
+     * @param s3ExportTaskDefinition {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition} The task definition of an S3 upload task if the status is associated with it, ie, if the eventType = S3Task.
+     * @param exportIdentifier {String} The export identifier the status is associated with.
+     * @param streamName {String} The name of the stream the status is associated with.
+     * @param sequenceNumber {Number} The sequence number of the message the status is associated with.
+     */
+    constructor(
+        s3ExportTaskDefinition = null,
+        exportIdentifier = null,
+        streamName = null,
+        sequenceNumber = null,
+    ) {
+        if (s3ExportTaskDefinition !== null && !(s3ExportTaskDefinition instanceof S3ExportTaskDefinition)) {
+            throw new Error("s3ExportTaskDefinition must be S3ExportTaskDefinition");
+        }
+
+        if (exportIdentifier !== null && !(typeof exportIdentifier === "string")) {
+            throw new Error("exportIdentifier must be String");
+        }
+
+        if (streamName !== null && !(typeof streamName === "string")) {
+            throw new Error("streamName must be String");
+        }
+
+        if (sequenceNumber !== null && !(typeof sequenceNumber === "number")) {
+            throw new Error("sequenceNumber must be Number");
+        }
+
+        this.#__s3ExportTaskDefinition = s3ExportTaskDefinition;
+        this.#__exportIdentifier = exportIdentifier;
+        this.#__streamName = streamName;
+        this.#__sequenceNumber = sequenceNumber;
+    }
+
+    /**
+     * The task definition of an S3 upload task if the status is associated with it, ie, if the eventType = S3Task.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition}
+     
+     */
+    get s3ExportTaskDefinition() {
+        return this.#__s3ExportTaskDefinition;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition} The task definition of an S3 upload task if the status is associated with it, ie, if the eventType = S3Task.
+     */
+    set s3ExportTaskDefinition(value) {
+        if (value !== null && !(value instanceof S3ExportTaskDefinition)) {
+            throw new Error("s3ExportTaskDefinition must be S3ExportTaskDefinition");
+        }
+
+        this.#__s3ExportTaskDefinition = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition} The task definition of an S3 upload task if the status is associated with it, ie, if the eventType = S3Task.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusContext}
+     */
+    withS3ExportTaskDefinition(value) {
+        this.s3ExportTaskDefinition = value;
+        return this;
+    }
+
+    /**
+     * The export identifier the status is associated with.
+     * @returns {String}
+     
+     */
+    get exportIdentifier() {
+        return this.#__exportIdentifier;
+    }
+    /**
+     * @param value {String} The export identifier the status is associated with.
+     */
+    set exportIdentifier(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("exportIdentifier must be String");
+        }
+
+        this.#__exportIdentifier = value;
+    }
+    /**
+     * @param value {String} The export identifier the status is associated with.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusContext}
+     */
+    withExportIdentifier(value) {
+        this.exportIdentifier = value;
+        return this;
+    }
+
+    /**
+     * The name of the stream the status is associated with.
+     * @returns {String}
+     
+     */
+    get streamName() {
+        return this.#__streamName;
+    }
+    /**
+     * @param value {String} The name of the stream the status is associated with.
+     */
+    set streamName(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("streamName must be String");
+        }
+
+        this.#__streamName = value;
+    }
+    /**
+     * @param value {String} The name of the stream the status is associated with.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusContext}
+     */
+    withStreamName(value) {
+        this.streamName = value;
+        return this;
+    }
+
+    /**
+     * The sequence number of the message the status is associated with.
+     * @returns {Number}
+     
+     */
+    get sequenceNumber() {
+        return this.#__sequenceNumber;
+    }
+    /**
+     * @param value {Number} The sequence number of the message the status is associated with.
+     */
+    set sequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("sequenceNumber must be Number");
+        }
+
+        this.#__sequenceNumber = value;
+    }
+    /**
+     * @param value {Number} The sequence number of the message the status is associated with.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusContext}
+     */
+    withSequenceNumber(value) {
+        this.sequenceNumber = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new StatusContext();
+        if ("s3ExportTaskDefinition" in d) {
+            ret.s3ExportTaskDefinition = Object.prototype.hasOwnProperty.call(S3ExportTaskDefinition, "fromMap") ? S3ExportTaskDefinition.fromMap(d["s3ExportTaskDefinition"]) : d["s3ExportTaskDefinition"];
+        }
+        if ("exportIdentifier" in d) {
+            ret.exportIdentifier = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["exportIdentifier"]) : d["exportIdentifier"];
+        }
+        if ("streamName" in d) {
+            ret.streamName = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["streamName"]) : d["streamName"];
+        }
+        if ("sequenceNumber" in d) {
+            ret.sequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["sequenceNumber"]) : d["sequenceNumber"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.s3ExportTaskDefinition !== null) {
+            d["s3ExportTaskDefinition"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.s3ExportTaskDefinition), "asMap") ? this.s3ExportTaskDefinition.asMap() : this.s3ExportTaskDefinition;
+        }
+        if (this.exportIdentifier !== null) {
+            d["exportIdentifier"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.exportIdentifier), "asMap") ? this.exportIdentifier.asMap() : this.exportIdentifier;
+        }
+        if (this.streamName !== null) {
+            d["streamName"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.streamName), "asMap") ? this.streamName.asMap() : this.streamName;
+        }
+        if (this.sequenceNumber !== null) {
+            d["sequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sequenceNumber), "asMap") ? this.sequenceNumber.asMap() : this.sequenceNumber;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(StatusContext, "typesMap", {
+    value: {
+        s3ExportTaskDefinition: {
+            'type': S3ExportTaskDefinition,
+            'subtype': null
+        },
+        exportIdentifier: {
+            'type': String,
+            'subtype': null
+        },
+        streamName: {
+            'type': String,
+            'subtype': null
+        },
+        sequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(StatusContext, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(StatusContext, "validationsMap", {
+    value: {
+        's3ExportTaskDefinition': {
+            'required': false,
+        },
+        'exportIdentifier': {
+            'required': false,
+        },
+        'streamName': {
+            'required': false,
+        },
+        'sequenceNumber': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * Status object appended to a status-stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class StatusMessage {
+    #__eventType = null;
+    #__statusLevel = null;
+    #__status = null;
+    #__statusContext = null;
+    #__message = null;
+    #__timestampEpochMs = null;
+
+    /**
+     * @param eventType {aws-greengrass-core-sdk.StreamManager.EventType} 
+     * @param statusLevel {aws-greengrass-core-sdk.StreamManager.StatusLevel} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.Status} 
+     * @param statusContext {aws-greengrass-core-sdk.StreamManager.StatusContext} 
+     * @param message {String} String describing the status message.
+     * @param timestampEpochMs {Number} The time this status was added to the status-stream (in milliseconds since epoch).
+     */
+    constructor(
+        eventType = null,
+        statusLevel = null,
+        status = null,
+        statusContext = null,
+        message = null,
+        timestampEpochMs = null,
+    ) {
+        if (eventType !== null && !(eventType instanceof EventType)) {
+            throw new Error("eventType must be EventType");
+        }
+
+        if (statusLevel !== null && !(statusLevel instanceof StatusLevel)) {
+            throw new Error("statusLevel must be StatusLevel");
+        }
+
+        if (status !== null && !(status instanceof Status)) {
+            throw new Error("status must be Status");
+        }
+
+        if (statusContext !== null && !(statusContext instanceof StatusContext)) {
+            throw new Error("statusContext must be StatusContext");
+        }
+
+        if (message !== null && !(typeof message === "string")) {
+            throw new Error("message must be String");
+        }
+
+        if (timestampEpochMs !== null && !(typeof timestampEpochMs === "number")) {
+            throw new Error("timestampEpochMs must be Number");
+        }
+
+        this.#__eventType = eventType;
+        this.#__statusLevel = statusLevel;
+        this.#__status = status;
+        this.#__statusContext = statusContext;
+        this.#__message = message;
+        this.#__timestampEpochMs = timestampEpochMs;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.EventType}
+     
+     */
+    get eventType() {
+        return this.#__eventType;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.EventType} 
+     */
+    set eventType(value) {
+        if (value !== null && !(value instanceof EventType)) {
+            throw new Error("eventType must be EventType");
+        }
+
+        this.#__eventType = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.EventType} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusMessage}
+     */
+    withEventType(value) {
+        this.eventType = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusLevel}
+     
+     */
+    get statusLevel() {
+        return this.#__statusLevel;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusLevel} 
+     */
+    set statusLevel(value) {
+        if (value !== null && !(value instanceof StatusLevel)) {
+            throw new Error("statusLevel must be StatusLevel");
+        }
+
+        this.#__statusLevel = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusLevel} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusMessage}
+     */
+    withStatusLevel(value) {
+        this.statusLevel = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.Status}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Status} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof Status)) {
+            throw new Error("status must be Status");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Status} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusMessage}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusContext}
+     
+     */
+    get statusContext() {
+        return this.#__statusContext;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusContext} 
+     */
+    set statusContext(value) {
+        if (value !== null && !(value instanceof StatusContext)) {
+            throw new Error("statusContext must be StatusContext");
+        }
+
+        this.#__statusContext = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusContext} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusMessage}
+     */
+    withStatusContext(value) {
+        this.statusContext = value;
+        return this;
+    }
+
+    /**
+     * String describing the status message.
+     * @returns {String}
+     
+     */
+    get message() {
+        return this.#__message;
+    }
+    /**
+     * @param value {String} String describing the status message.
+     */
+    set message(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("message must be String");
+        }
+
+        this.#__message = value;
+    }
+    /**
+     * @param value {String} String describing the status message.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusMessage}
+     */
+    withMessage(value) {
+        this.message = value;
+        return this;
+    }
+
+    /**
+     * The time this status was added to the status-stream (in milliseconds since epoch).
+     * @returns {Number}
+     
+     */
+    get timestampEpochMs() {
+        return this.#__timestampEpochMs;
+    }
+    /**
+     * @param value {Number} The time this status was added to the status-stream (in milliseconds since epoch).
+     */
+    set timestampEpochMs(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("timestampEpochMs must be Number");
+        }
+
+        this.#__timestampEpochMs = value;
+    }
+    /**
+     * @param value {Number} The time this status was added to the status-stream (in milliseconds since epoch).
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusMessage}
+     */
+    withTimestampEpochMs(value) {
+        this.timestampEpochMs = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new StatusMessage();
+        if ("eventType" in d) {
+            ret.eventType = Object.prototype.hasOwnProperty.call(EventType, "fromMap") ? EventType.fromMap(d["eventType"]) : d["eventType"];
+        }
+        if ("statusLevel" in d) {
+            ret.statusLevel = Object.prototype.hasOwnProperty.call(StatusLevel, "fromMap") ? StatusLevel.fromMap(d["statusLevel"]) : d["statusLevel"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(Status, "fromMap") ? Status.fromMap(d["status"]) : d["status"];
+        }
+        if ("statusContext" in d) {
+            ret.statusContext = Object.prototype.hasOwnProperty.call(StatusContext, "fromMap") ? StatusContext.fromMap(d["statusContext"]) : d["statusContext"];
+        }
+        if ("message" in d) {
+            ret.message = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["message"]) : d["message"];
+        }
+        if ("timestampEpochMs" in d) {
+            ret.timestampEpochMs = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["timestampEpochMs"]) : d["timestampEpochMs"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.eventType !== null) {
+            d["eventType"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.eventType), "asMap") ? this.eventType.asMap() : this.eventType;
+        }
+        if (this.statusLevel !== null) {
+            d["statusLevel"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.statusLevel), "asMap") ? this.statusLevel.asMap() : this.statusLevel;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.statusContext !== null) {
+            d["statusContext"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.statusContext), "asMap") ? this.statusContext.asMap() : this.statusContext;
+        }
+        if (this.message !== null) {
+            d["message"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.message), "asMap") ? this.message.asMap() : this.message;
+        }
+        if (this.timestampEpochMs !== null) {
+            d["timestampEpochMs"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.timestampEpochMs), "asMap") ? this.timestampEpochMs.asMap() : this.timestampEpochMs;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(StatusMessage, "typesMap", {
+    value: {
+        eventType: {
+            'type': EventType,
+            'subtype': null
+        },
+        statusLevel: {
+            'type': StatusLevel,
+            'subtype': null
+        },
+        status: {
+            'type': Status,
+            'subtype': null
+        },
+        statusContext: {
+            'type': StatusContext,
+            'subtype': null
+        },
+        message: {
+            'type': String,
+            'subtype': null
+        },
+        timestampEpochMs: {
+            'type': Number,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(StatusMessage, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(StatusMessage, "validationsMap", {
+    value: {
+        'eventType': {
+            'required': true,
+        },
+        'statusLevel': {
+            'required': false,
+        },
+        'status': {
+            'required': true,
+        },
+        'statusContext': {
+            'required': false,
+        },
+        'message': {
+            'required': false,
+        },
+        'timestampEpochMs': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * (Internal Only) TraceableRequest that contains only requestId.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class TraceableRequest {
+    #__requestId = null;
+
+    /**
+     * @param requestId {String} 
+     */
+    constructor(
+        requestId = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = requestId;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.TraceableRequest}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new TraceableRequest();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(TraceableRequest, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(TraceableRequest, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(TraceableRequest, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+    }
+});
+
+/**
+ * (Internal Only) Response for UnknownOperationError.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class UnknownOperationError {
+    #__requestId = null;
+    #__status = null;
+    #__errorMessage = null;
+
+    /**
+     * @param requestId {String} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @param errorMessage {String} 
+     */
+    constructor(
+        requestId = null,
+        status = null,
+        errorMessage = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (status !== null && !(status instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        if (errorMessage !== null && !(typeof errorMessage === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__requestId = requestId;
+        this.#__status = status;
+        this.#__errorMessage = errorMessage;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UnknownOperationError}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UnknownOperationError}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get errorMessage() {
+        return this.#__errorMessage;
+    }
+    /**
+     * @param value {String} 
+     */
+    set errorMessage(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__errorMessage = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UnknownOperationError}
+     */
+    withErrorMessage(value) {
+        this.errorMessage = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new UnknownOperationError();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
+        }
+        if ("errorMessage" in d) {
+            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.errorMessage !== null) {
+            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(UnknownOperationError, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        status: {
+            'type': ResponseStatusCode,
+            'subtype': null
+        },
+        errorMessage: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(UnknownOperationError, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(UnknownOperationError, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'status': {
+            'required': true,
+        },
+        'errorMessage': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * Stream persistence. If set to File, the file system will be used to persist messages long-term and is resilient to restarts.
+   Memory should be used when performance matters more than durability as it only stores the stream in memory and never writes to the disk.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class Persistence {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(Persistence.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return Persistence[Persistence.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(Persistence, "options", {
+    value: {
+        File: 0,
+        Memory: 1,
+    }
+});
+Object.defineProperty(Persistence, "optionsFlipped", {
+    value: {
+        0: "File",
+        1: "Memory",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Persistence} File
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Persistence#
+ * @readonly
+ */
+Object.defineProperty(Persistence, "File", {
+    value: new Persistence(0)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Persistence} Memory
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Persistence#
+ * @readonly
+ */
+Object.defineProperty(Persistence, "Memory", {
+    value: new Persistence(1)
+});
+
+/**
+ * ExportFormat is used to define how messages are batched and formatted in the export payload.
+   RAW_NOT_BATCHED: Each message in a batch will be sent as an individual HTTP POST with the payload as the body (even if batchSize is set).
+   JSON_BATCHED: Each batch of messages will be sent as a JSON list of Message objects as the body.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class ExportFormat {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(ExportFormat.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return ExportFormat[ExportFormat.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(ExportFormat, "options", {
+    value: {
+        RAW_NOT_BATCHED: 0,
+        JSON_BATCHED: 1,
+    }
+});
+Object.defineProperty(ExportFormat, "optionsFlipped", {
+    value: {
+        0: "RAW_NOT_BATCHED",
+        1: "JSON_BATCHED",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.ExportFormat} RAW_NOT_BATCHED
+ * @memberOf aws-greengrass-core-sdk.StreamManager.ExportFormat#
+ * @readonly
+ */
+Object.defineProperty(ExportFormat, "RAW_NOT_BATCHED", {
+    value: new ExportFormat(0)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.ExportFormat} JSON_BATCHED
+ * @memberOf aws-greengrass-core-sdk.StreamManager.ExportFormat#
+ * @readonly
+ */
+Object.defineProperty(ExportFormat, "JSON_BATCHED", {
+    value: new ExportFormat(1)
+});
+
+/**
  * This export destination is not supported! The interface may change at any time without notice and should not be relied on for any production use.
    There are no guarantees around its correctness.
    This configures an HTTP endpoint which sends a POST request to the provided URI. Each request contains a single message in the body of the request.
@@ -1256,18 +2692,24 @@ class HTTPConfig {
     #__batchSize = null;
     #__batchIntervalMillis = null;
     #__priority = null;
+    #__startSequenceNumber = null;
+    #__disabled = null;
+    #__exportFormat = null;
 
     /**
      * @param identifier {String} A unique identifier to identify this individual upload stream.
        Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
      * @param uri {String} URL for HTTP endpoint which should receive the POST requests for export.
-     * @param batchSize {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param batchSize {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum batch size is 1 and the maximum is 500.
      * @param batchIntervalMillis {Number} The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
      * @param priority {Number} Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @param startSequenceNumber {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @param disabled {Boolean} Enable or disable this export. Default is false.
+     * @param exportFormat {aws-greengrass-core-sdk.StreamManager.ExportFormat} Defines how messages are batched and formatted in the export payload.
      */
     constructor(
         identifier = null,
@@ -1275,6 +2717,9 @@ class HTTPConfig {
         batchSize = null,
         batchIntervalMillis = null,
         priority = null,
+        startSequenceNumber = null,
+        disabled = null,
+        exportFormat = null,
     ) {
         if (identifier !== null && !(typeof identifier === "string")) {
             throw new Error("identifier must be String");
@@ -1296,11 +2741,26 @@ class HTTPConfig {
             throw new Error("priority must be Number");
         }
 
+        if (startSequenceNumber !== null && !(typeof startSequenceNumber === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        if (disabled !== null && !(typeof disabled === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        if (exportFormat !== null && !(exportFormat instanceof ExportFormat)) {
+            throw new Error("exportFormat must be ExportFormat");
+        }
+
         this.#__identifier = identifier;
         this.#__uri = uri;
         this.#__batchSize = batchSize;
         this.#__batchIntervalMillis = batchIntervalMillis;
         this.#__priority = priority;
+        this.#__startSequenceNumber = startSequenceNumber;
+        this.#__disabled = disabled;
+        this.#__exportFormat = exportFormat;
     }
 
     /**
@@ -1361,7 +2821,7 @@ class HTTPConfig {
     }
 
     /**
-     * The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum batch size is 1 and the maximum is 500.
      * @returns {Number}
@@ -1371,7 +2831,7 @@ class HTTPConfig {
         return this.#__batchSize;
     }
     /**
-     * @param value {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param value {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum batch size is 1 and the maximum is 500.
      */
@@ -1383,7 +2843,7 @@ class HTTPConfig {
         this.#__batchSize = value;
     }
     /**
-     * @param value {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param value {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum batch size is 1 and the maximum is 500.
      * @returns {aws-greengrass-core-sdk.StreamManager.HTTPConfig}
@@ -1453,6 +2913,87 @@ class HTTPConfig {
         return this;
     }
 
+    /**
+     * The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {Number}
+     
+     */
+    get startSequenceNumber() {
+        return this.#__startSequenceNumber;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     */
+    set startSequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        this.#__startSequenceNumber = value;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {aws-greengrass-core-sdk.StreamManager.HTTPConfig}
+     */
+    withStartSequenceNumber(value) {
+        this.startSequenceNumber = value;
+        return this;
+    }
+
+    /**
+     * Enable or disable this export. Default is false.
+     * @returns {Boolean}
+     
+     */
+    get disabled() {
+        return this.#__disabled;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     */
+    set disabled(value) {
+        if (value !== null && !(typeof value === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        this.#__disabled = value;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     * @returns {aws-greengrass-core-sdk.StreamManager.HTTPConfig}
+     */
+    withDisabled(value) {
+        this.disabled = value;
+        return this;
+    }
+
+    /**
+     * Defines how messages are batched and formatted in the export payload.
+     * @returns {aws-greengrass-core-sdk.StreamManager.ExportFormat}
+     
+     */
+    get exportFormat() {
+        return this.#__exportFormat;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ExportFormat} Defines how messages are batched and formatted in the export payload.
+     */
+    set exportFormat(value) {
+        if (value !== null && !(value instanceof ExportFormat)) {
+            throw new Error("exportFormat must be ExportFormat");
+        }
+
+        this.#__exportFormat = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ExportFormat} Defines how messages are batched and formatted in the export payload.
+     * @returns {aws-greengrass-core-sdk.StreamManager.HTTPConfig}
+     */
+    withExportFormat(value) {
+        this.exportFormat = value;
+        return this;
+    }
+
     static fromMap(d) {
         const ret = new HTTPConfig();
         if ("identifier" in d) {
@@ -1469,6 +3010,15 @@ class HTTPConfig {
         }
         if ("priority" in d) {
             ret.priority = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["priority"]) : d["priority"];
+        }
+        if ("startSequenceNumber" in d) {
+            ret.startSequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["startSequenceNumber"]) : d["startSequenceNumber"];
+        }
+        if ("disabled" in d) {
+            ret.disabled = Object.prototype.hasOwnProperty.call(Boolean, "fromMap") ? Boolean.fromMap(d["disabled"]) : d["disabled"];
+        }
+        if ("exportFormat" in d) {
+            ret.exportFormat = Object.prototype.hasOwnProperty.call(ExportFormat, "fromMap") ? ExportFormat.fromMap(d["exportFormat"]) : d["exportFormat"];
         }
         return ret;
     }
@@ -1489,6 +3039,15 @@ class HTTPConfig {
         }
         if (this.priority !== null) {
             d["priority"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.priority), "asMap") ? this.priority.asMap() : this.priority;
+        }
+        if (this.startSequenceNumber !== null) {
+            d["startSequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.startSequenceNumber), "asMap") ? this.startSequenceNumber.asMap() : this.startSequenceNumber;
+        }
+        if (this.disabled !== null) {
+            d["disabled"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.disabled), "asMap") ? this.disabled.asMap() : this.disabled;
+        }
+        if (this.exportFormat !== null) {
+            d["exportFormat"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.exportFormat), "asMap") ? this.exportFormat.asMap() : this.exportFormat;
         }
         return d;
     }
@@ -1514,6 +3073,18 @@ Object.defineProperty(HTTPConfig, "typesMap", {
         },
         priority: {
             'type': Number,
+            'subtype': null
+        },
+        startSequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+        disabled: {
+            'type': Boolean,
+            'subtype': null
+        },
+        exportFormat: {
+            'type': ExportFormat,
             'subtype': null
         },
     }
@@ -1548,6 +3119,17 @@ Object.defineProperty(HTTPConfig, "validationsMap", {
             'maximum': 10,
             'minimum': 1,
         },
+        'startSequenceNumber': {
+            'required': false,
+            'maximum': 9223372036854775807,
+            'minimum': 0,
+        },
+        'disabled': {
+            'required': false,
+        },
+        'exportFormat': {
+            'required': false,
+        },
     }
 });
 
@@ -1564,20 +3146,24 @@ class IoTAnalyticsConfig {
     #__batchSize = null;
     #__batchIntervalMillis = null;
     #__priority = null;
+    #__startSequenceNumber = null;
+    #__disabled = null;
 
     /**
      * @param identifier {String} A unique identifier to identify this individual upload stream.
        Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
-     * @param iotChannel {String} The name of the IoT Analytics Channel that this exporter should upload to
+     * @param iotChannel {String} The name of the IoT Analytics Channel that this exporter should upload to.
      * @param iotMsgIdPrefix {String} A string prefixed to each unique message id. After this prefix, StreamManager may append more data to make the message ID unique.
        This prefix must be less than 32 characters.
-     * @param batchSize {Number} The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param batchSize {Number} The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 100.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 100.
      * @param batchIntervalMillis {Number} The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
      * @param priority {Number} Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @param startSequenceNumber {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @param disabled {Boolean} Enable or disable this export. Default is false.
      */
     constructor(
         identifier = null,
@@ -1586,6 +3172,8 @@ class IoTAnalyticsConfig {
         batchSize = null,
         batchIntervalMillis = null,
         priority = null,
+        startSequenceNumber = null,
+        disabled = null,
     ) {
         if (identifier !== null && !(typeof identifier === "string")) {
             throw new Error("identifier must be String");
@@ -1611,12 +3199,22 @@ class IoTAnalyticsConfig {
             throw new Error("priority must be Number");
         }
 
+        if (startSequenceNumber !== null && !(typeof startSequenceNumber === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        if (disabled !== null && !(typeof disabled === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
         this.#__identifier = identifier;
         this.#__iotChannel = iotChannel;
         this.#__iotMsgIdPrefix = iotMsgIdPrefix;
         this.#__batchSize = batchSize;
         this.#__batchIntervalMillis = batchIntervalMillis;
         this.#__priority = priority;
+        this.#__startSequenceNumber = startSequenceNumber;
+        this.#__disabled = disabled;
     }
 
     /**
@@ -1650,7 +3248,7 @@ class IoTAnalyticsConfig {
     }
 
     /**
-     * The name of the IoT Analytics Channel that this exporter should upload to
+     * The name of the IoT Analytics Channel that this exporter should upload to.
      * @returns {String}
      
      */
@@ -1658,7 +3256,7 @@ class IoTAnalyticsConfig {
         return this.#__iotChannel;
     }
     /**
-     * @param value {String} The name of the IoT Analytics Channel that this exporter should upload to
+     * @param value {String} The name of the IoT Analytics Channel that this exporter should upload to.
      */
     set iotChannel(value) {
         if (value !== null && !(typeof value === "string")) {
@@ -1668,7 +3266,7 @@ class IoTAnalyticsConfig {
         this.#__iotChannel = value;
     }
     /**
-     * @param value {String} The name of the IoT Analytics Channel that this exporter should upload to
+     * @param value {String} The name of the IoT Analytics Channel that this exporter should upload to.
      * @returns {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig}
      */
     withIotChannel(value) {
@@ -1707,7 +3305,7 @@ class IoTAnalyticsConfig {
     }
 
     /**
-     * The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 100.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 100.
      * @returns {Number}
@@ -1717,7 +3315,7 @@ class IoTAnalyticsConfig {
         return this.#__batchSize;
     }
     /**
-     * @param value {Number} The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param value {Number} The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 100.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 100.
      */
@@ -1729,7 +3327,7 @@ class IoTAnalyticsConfig {
         this.#__batchSize = value;
     }
     /**
-     * @param value {Number} The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param value {Number} The maximum size of a batch to send to IoT Analytics. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 100.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 100.
      * @returns {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig}
@@ -1799,6 +3397,60 @@ class IoTAnalyticsConfig {
         return this;
     }
 
+    /**
+     * The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {Number}
+     
+     */
+    get startSequenceNumber() {
+        return this.#__startSequenceNumber;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     */
+    set startSequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        this.#__startSequenceNumber = value;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig}
+     */
+    withStartSequenceNumber(value) {
+        this.startSequenceNumber = value;
+        return this;
+    }
+
+    /**
+     * Enable or disable this export. Default is false.
+     * @returns {Boolean}
+     
+     */
+    get disabled() {
+        return this.#__disabled;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     */
+    set disabled(value) {
+        if (value !== null && !(typeof value === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        this.#__disabled = value;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig}
+     */
+    withDisabled(value) {
+        this.disabled = value;
+        return this;
+    }
+
     static fromMap(d) {
         const ret = new IoTAnalyticsConfig();
         if ("identifier" in d) {
@@ -1818,6 +3470,12 @@ class IoTAnalyticsConfig {
         }
         if ("priority" in d) {
             ret.priority = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["priority"]) : d["priority"];
+        }
+        if ("startSequenceNumber" in d) {
+            ret.startSequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["startSequenceNumber"]) : d["startSequenceNumber"];
+        }
+        if ("disabled" in d) {
+            ret.disabled = Object.prototype.hasOwnProperty.call(Boolean, "fromMap") ? Boolean.fromMap(d["disabled"]) : d["disabled"];
         }
         return ret;
     }
@@ -1841,6 +3499,12 @@ class IoTAnalyticsConfig {
         }
         if (this.priority !== null) {
             d["priority"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.priority), "asMap") ? this.priority.asMap() : this.priority;
+        }
+        if (this.startSequenceNumber !== null) {
+            d["startSequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.startSequenceNumber), "asMap") ? this.startSequenceNumber.asMap() : this.startSequenceNumber;
+        }
+        if (this.disabled !== null) {
+            d["disabled"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.disabled), "asMap") ? this.disabled.asMap() : this.disabled;
         }
         return d;
     }
@@ -1870,6 +3534,14 @@ Object.defineProperty(IoTAnalyticsConfig, "typesMap", {
         },
         priority: {
             'type': Number,
+            'subtype': null
+        },
+        startSequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+        disabled: {
+            'type': Boolean,
             'subtype': null
         },
     }
@@ -1908,6 +3580,14 @@ Object.defineProperty(IoTAnalyticsConfig, "validationsMap", {
             'maximum': 10,
             'minimum': 1,
         },
+        'startSequenceNumber': {
+            'required': false,
+            'maximum': 9223372036854775807,
+            'minimum': 0,
+        },
+        'disabled': {
+            'required': false,
+        },
     }
 });
 
@@ -1923,18 +3603,22 @@ class KinesisConfig {
     #__batchSize = null;
     #__batchIntervalMillis = null;
     #__priority = null;
+    #__startSequenceNumber = null;
+    #__disabled = null;
 
     /**
      * @param identifier {String} A unique identifier to identify this individual upload stream.
        Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
-     * @param kinesisStreamName {String} The name of the Kinesis data stream that this exporter should upload to
-     * @param batchSize {Number} The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param kinesisStreamName {String} The name of the Kinesis data stream that this exporter should upload to.
+     * @param batchSize {Number} The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.
      * @param batchIntervalMillis {Number} The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
      * @param priority {Number} Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @param startSequenceNumber {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @param disabled {Boolean} Enable or disable this export. Default is false.
      */
     constructor(
         identifier = null,
@@ -1942,6 +3626,8 @@ class KinesisConfig {
         batchSize = null,
         batchIntervalMillis = null,
         priority = null,
+        startSequenceNumber = null,
+        disabled = null,
     ) {
         if (identifier !== null && !(typeof identifier === "string")) {
             throw new Error("identifier must be String");
@@ -1963,11 +3649,21 @@ class KinesisConfig {
             throw new Error("priority must be Number");
         }
 
+        if (startSequenceNumber !== null && !(typeof startSequenceNumber === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        if (disabled !== null && !(typeof disabled === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
         this.#__identifier = identifier;
         this.#__kinesisStreamName = kinesisStreamName;
         this.#__batchSize = batchSize;
         this.#__batchIntervalMillis = batchIntervalMillis;
         this.#__priority = priority;
+        this.#__startSequenceNumber = startSequenceNumber;
+        this.#__disabled = disabled;
     }
 
     /**
@@ -2001,7 +3697,7 @@ class KinesisConfig {
     }
 
     /**
-     * The name of the Kinesis data stream that this exporter should upload to
+     * The name of the Kinesis data stream that this exporter should upload to.
      * @returns {String}
      
      */
@@ -2009,7 +3705,7 @@ class KinesisConfig {
         return this.#__kinesisStreamName;
     }
     /**
-     * @param value {String} The name of the Kinesis data stream that this exporter should upload to
+     * @param value {String} The name of the Kinesis data stream that this exporter should upload to.
      */
     set kinesisStreamName(value) {
         if (value !== null && !(typeof value === "string")) {
@@ -2019,7 +3715,7 @@ class KinesisConfig {
         this.#__kinesisStreamName = value;
     }
     /**
-     * @param value {String} The name of the Kinesis data stream that this exporter should upload to
+     * @param value {String} The name of the Kinesis data stream that this exporter should upload to.
      * @returns {aws-greengrass-core-sdk.StreamManager.KinesisConfig}
      */
     withKinesisStreamName(value) {
@@ -2028,7 +3724,7 @@ class KinesisConfig {
     }
 
     /**
-     * The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.
      * @returns {Number}
@@ -2038,7 +3734,7 @@ class KinesisConfig {
         return this.#__batchSize;
     }
     /**
-     * @param value {Number} The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param value {Number} The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.
      */
@@ -2050,7 +3746,7 @@ class KinesisConfig {
         this.#__batchSize = value;
     }
     /**
-     * @param value {Number} The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+     * @param value {Number} The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.
      * @returns {aws-greengrass-core-sdk.StreamManager.KinesisConfig}
@@ -2120,6 +3816,60 @@ class KinesisConfig {
         return this;
     }
 
+    /**
+     * The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {Number}
+     
+     */
+    get startSequenceNumber() {
+        return this.#__startSequenceNumber;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     */
+    set startSequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        this.#__startSequenceNumber = value;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {aws-greengrass-core-sdk.StreamManager.KinesisConfig}
+     */
+    withStartSequenceNumber(value) {
+        this.startSequenceNumber = value;
+        return this;
+    }
+
+    /**
+     * Enable or disable this export. Default is false.
+     * @returns {Boolean}
+     
+     */
+    get disabled() {
+        return this.#__disabled;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     */
+    set disabled(value) {
+        if (value !== null && !(typeof value === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        this.#__disabled = value;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     * @returns {aws-greengrass-core-sdk.StreamManager.KinesisConfig}
+     */
+    withDisabled(value) {
+        this.disabled = value;
+        return this;
+    }
+
     static fromMap(d) {
         const ret = new KinesisConfig();
         if ("identifier" in d) {
@@ -2136,6 +3886,12 @@ class KinesisConfig {
         }
         if ("priority" in d) {
             ret.priority = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["priority"]) : d["priority"];
+        }
+        if ("startSequenceNumber" in d) {
+            ret.startSequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["startSequenceNumber"]) : d["startSequenceNumber"];
+        }
+        if ("disabled" in d) {
+            ret.disabled = Object.prototype.hasOwnProperty.call(Boolean, "fromMap") ? Boolean.fromMap(d["disabled"]) : d["disabled"];
         }
         return ret;
     }
@@ -2156,6 +3912,12 @@ class KinesisConfig {
         }
         if (this.priority !== null) {
             d["priority"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.priority), "asMap") ? this.priority.asMap() : this.priority;
+        }
+        if (this.startSequenceNumber !== null) {
+            d["startSequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.startSequenceNumber), "asMap") ? this.startSequenceNumber.asMap() : this.startSequenceNumber;
+        }
+        if (this.disabled !== null) {
+            d["disabled"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.disabled), "asMap") ? this.disabled.asMap() : this.disabled;
         }
         return d;
     }
@@ -2181,6 +3943,14 @@ Object.defineProperty(KinesisConfig, "typesMap", {
         },
         priority: {
             'type': Number,
+            'subtype': null
+        },
+        startSequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+        disabled: {
+            'type': Boolean,
             'subtype': null
         },
     }
@@ -2215,11 +3985,802 @@ Object.defineProperty(KinesisConfig, "validationsMap", {
             'maximum': 10,
             'minimum': 1,
         },
+        'startSequenceNumber': {
+            'required': false,
+            'maximum': 9223372036854775807,
+            'minimum': 0,
+        },
+        'disabled': {
+            'required': false,
+        },
     }
 });
 
 /**
- * Defines how and where the stream is uploaded
+ * Configuration object for IotSiteWise data streams export destination. Minimum version requirements: StreamManager server version 1.1 (or AWS IoT Greengrass Core 1.11.0)
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class IoTSiteWiseConfig {
+    #__identifier = null;
+    #__batchSize = null;
+    #__batchIntervalMillis = null;
+    #__priority = null;
+    #__startSequenceNumber = null;
+    #__disabled = null;
+
+    /**
+     * @param identifier {String} A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     * @param batchSize {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 10.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum batch size is 1 and the maximum is 10.
+     * @param batchIntervalMillis {Number} The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+     * @param priority {Number} Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @param startSequenceNumber {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @param disabled {Boolean} Enable or disable this export. Default is false.
+     */
+    constructor(
+        identifier = null,
+        batchSize = null,
+        batchIntervalMillis = null,
+        priority = null,
+        startSequenceNumber = null,
+        disabled = null,
+    ) {
+        if (identifier !== null && !(typeof identifier === "string")) {
+            throw new Error("identifier must be String");
+        }
+
+        if (batchSize !== null && !(typeof batchSize === "number")) {
+            throw new Error("batchSize must be Number");
+        }
+
+        if (batchIntervalMillis !== null && !(typeof batchIntervalMillis === "number")) {
+            throw new Error("batchIntervalMillis must be Number");
+        }
+
+        if (priority !== null && !(typeof priority === "number")) {
+            throw new Error("priority must be Number");
+        }
+
+        if (startSequenceNumber !== null && !(typeof startSequenceNumber === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        if (disabled !== null && !(typeof disabled === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        this.#__identifier = identifier;
+        this.#__batchSize = batchSize;
+        this.#__batchIntervalMillis = batchIntervalMillis;
+        this.#__priority = priority;
+        this.#__startSequenceNumber = startSequenceNumber;
+        this.#__disabled = disabled;
+    }
+
+    /**
+     * A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     * @returns {String}
+
+     */
+    get identifier() {
+        return this.#__identifier;
+    }
+    /**
+     * @param value {String} A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     */
+    set identifier(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("identifier must be String");
+        }
+
+        this.#__identifier = value;
+    }
+    /**
+     * @param value {String} A unique identifier to identify this individual upload stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig}
+     */
+    withIdentifier(value) {
+        this.identifier = value;
+        return this;
+    }
+
+    /**
+     * The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 10.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum batch size is 1 and the maximum is 10.
+     * @returns {Number}
+
+     */
+    get batchSize() {
+        return this.#__batchSize;
+    }
+    /**
+     * @param value {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 10.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum batch size is 1 and the maximum is 10.
+     */
+    set batchSize(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("batchSize must be Number");
+        }
+
+        this.#__batchSize = value;
+    }
+    /**
+     * @param value {Number} The maximum size of a batch to send to the destination. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 10.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum batch size is 1 and the maximum is 10.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig}
+     */
+    withBatchSize(value) {
+        this.batchSize = value;
+        return this;
+    }
+
+    /**
+     * The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+     * @returns {Number}
+
+     */
+    get batchIntervalMillis() {
+        return this.#__batchIntervalMillis;
+    }
+    /**
+     * @param value {Number} The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+     */
+    set batchIntervalMillis(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("batchIntervalMillis must be Number");
+        }
+
+        this.#__batchIntervalMillis = value;
+    }
+    /**
+     * @param value {Number} The time in milliseconds between the earliest un-uploaded message and the current time. If this time is exceeded, messages will be uploaded in the next batch. If unspecified messages will be eligible for upload immediately.
+       If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig}
+     */
+    withBatchIntervalMillis(value) {
+        this.batchIntervalMillis = value;
+        return this;
+    }
+
+    /**
+     * Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @returns {Number}
+     
+     */
+    get priority() {
+        return this.#__priority;
+    }
+    /**
+     * @param value {Number} Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     */
+    set priority(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("priority must be Number");
+        }
+
+        this.#__priority = value;
+    }
+    /**
+     * @param value {Number} Priority for this upload stream. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig}
+     */
+    withPriority(value) {
+        this.priority = value;
+        return this;
+    }
+
+    /**
+     * The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {Number}
+     
+     */
+    get startSequenceNumber() {
+        return this.#__startSequenceNumber;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     */
+    set startSequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("startSequenceNumber must be Number");
+        }
+
+        this.#__startSequenceNumber = value;
+    }
+    /**
+     * @param value {Number} The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig}
+     */
+    withStartSequenceNumber(value) {
+        this.startSequenceNumber = value;
+        return this;
+    }
+
+    /**
+     * Enable or disable this export. Default is false.
+     * @returns {Boolean}
+     
+     */
+    get disabled() {
+        return this.#__disabled;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     */
+    set disabled(value) {
+        if (value !== null && !(typeof value === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        this.#__disabled = value;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig}
+     */
+    withDisabled(value) {
+        this.disabled = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new IoTSiteWiseConfig();
+        if ("identifier" in d) {
+            ret.identifier = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["identifier"]) : d["identifier"];
+        }
+        if ("batchSize" in d) {
+            ret.batchSize = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["batchSize"]) : d["batchSize"];
+        }
+        if ("batchIntervalMillis" in d) {
+            ret.batchIntervalMillis = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["batchIntervalMillis"]) : d["batchIntervalMillis"];
+        }
+        if ("priority" in d) {
+            ret.priority = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["priority"]) : d["priority"];
+        }
+        if ("startSequenceNumber" in d) {
+            ret.startSequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["startSequenceNumber"]) : d["startSequenceNumber"];
+        }
+        if ("disabled" in d) {
+            ret.disabled = Object.prototype.hasOwnProperty.call(Boolean, "fromMap") ? Boolean.fromMap(d["disabled"]) : d["disabled"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.identifier !== null) {
+            d["identifier"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.identifier), "asMap") ? this.identifier.asMap() : this.identifier;
+        }
+        if (this.batchSize !== null) {
+            d["batchSize"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.batchSize), "asMap") ? this.batchSize.asMap() : this.batchSize;
+        }
+        if (this.batchIntervalMillis !== null) {
+            d["batchIntervalMillis"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.batchIntervalMillis), "asMap") ? this.batchIntervalMillis.asMap() : this.batchIntervalMillis;
+        }
+        if (this.priority !== null) {
+            d["priority"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.priority), "asMap") ? this.priority.asMap() : this.priority;
+        }
+        if (this.startSequenceNumber !== null) {
+            d["startSequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.startSequenceNumber), "asMap") ? this.startSequenceNumber.asMap() : this.startSequenceNumber;
+        }
+        if (this.disabled !== null) {
+            d["disabled"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.disabled), "asMap") ? this.disabled.asMap() : this.disabled;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(IoTSiteWiseConfig, "typesMap", {
+    value: {
+        identifier: {
+            'type': String,
+            'subtype': null
+        },
+        batchSize: {
+            'type': Number,
+            'subtype': null
+        },
+        batchIntervalMillis: {
+            'type': Number,
+            'subtype': null
+        },
+        priority: {
+            'type': Number,
+            'subtype': null
+        },
+        startSequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+        disabled: {
+            'type': Boolean,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(IoTSiteWiseConfig, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(IoTSiteWiseConfig, "validationsMap", {
+    value: {
+        'identifier': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 255,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'batchSize': {
+            'required': false,
+            'maximum': 10,
+            'minimum': 1,
+        },
+        'batchIntervalMillis': {
+            'required': false,
+            'maximum': 9223372036854,
+            'minimum': 60000,
+        },
+        'priority': {
+            'required': false,
+            'maximum': 10,
+            'minimum': 1,
+        },
+        'startSequenceNumber': {
+            'required': false,
+            'maximum': 9223372036854775807,
+            'minimum': 0,
+        },
+        'disabled': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * Configuration for status in a status-stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class StatusConfig {
+    #__statusLevel = null;
+    #__statusStreamName = null;
+
+    /**
+     * @param statusLevel {aws-greengrass-core-sdk.StreamManager.StatusLevel} Defines the verbosity of status messages in a status-stream.
+     * @param statusStreamName {String} The name of the stream to which status messages are appended.
+       The status-stream should be created before associating it with another stream.
+     */
+    constructor(
+        statusLevel = null,
+        statusStreamName = null,
+    ) {
+        if (statusLevel !== null && !(statusLevel instanceof StatusLevel)) {
+            throw new Error("statusLevel must be StatusLevel");
+        }
+
+        if (statusStreamName !== null && !(typeof statusStreamName === "string")) {
+            throw new Error("statusStreamName must be String");
+        }
+
+        this.#__statusLevel = statusLevel;
+        this.#__statusStreamName = statusStreamName;
+    }
+
+    /**
+     * Defines the verbosity of status messages in a status-stream.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusLevel}
+     
+     */
+    get statusLevel() {
+        return this.#__statusLevel;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusLevel} Defines the verbosity of status messages in a status-stream.
+     */
+    set statusLevel(value) {
+        if (value !== null && !(value instanceof StatusLevel)) {
+            throw new Error("statusLevel must be StatusLevel");
+        }
+
+        this.#__statusLevel = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusLevel} Defines the verbosity of status messages in a status-stream.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusConfig}
+     */
+    withStatusLevel(value) {
+        this.statusLevel = value;
+        return this;
+    }
+
+    /**
+     * The name of the stream to which status messages are appended.
+       The status-stream should be created before associating it with another stream.
+     * @returns {String}
+
+     */
+    get statusStreamName() {
+        return this.#__statusStreamName;
+    }
+    /**
+     * @param value {String} The name of the stream to which status messages are appended.
+       The status-stream should be created before associating it with another stream.
+     */
+    set statusStreamName(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("statusStreamName must be String");
+        }
+
+        this.#__statusStreamName = value;
+    }
+    /**
+     * @param value {String} The name of the stream to which status messages are appended.
+       The status-stream should be created before associating it with another stream.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusConfig}
+     */
+    withStatusStreamName(value) {
+        this.statusStreamName = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new StatusConfig();
+        if ("statusLevel" in d) {
+            ret.statusLevel = Object.prototype.hasOwnProperty.call(StatusLevel, "fromMap") ? StatusLevel.fromMap(d["statusLevel"]) : d["statusLevel"];
+        }
+        if ("statusStreamName" in d) {
+            ret.statusStreamName = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["statusStreamName"]) : d["statusStreamName"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.statusLevel !== null) {
+            d["statusLevel"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.statusLevel), "asMap") ? this.statusLevel.asMap() : this.statusLevel;
+        }
+        if (this.statusStreamName !== null) {
+            d["statusStreamName"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.statusStreamName), "asMap") ? this.statusStreamName.asMap() : this.statusStreamName;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(StatusConfig, "typesMap", {
+    value: {
+        statusLevel: {
+            'type': StatusLevel,
+            'subtype': null
+        },
+        statusStreamName: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(StatusConfig, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(StatusConfig, "validationsMap", {
+    value: {
+        'statusLevel': {
+            'required': false,
+        },
+        'statusStreamName': {
+            'required': false,
+            'minLength': 1,
+            'maxLength': 255,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+    }
+});
+
+/**
+ * Configuration object for S3 export tasks executor.  Minimum version requirements: StreamManager server version 1.1 (or AWS IoT Greengrass Core 1.11.0)
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class S3ExportTaskExecutorConfig {
+    #__identifier = null;
+    #__sizeThresholdForMultipartUploadBytes = null;
+    #__priority = null;
+    #__disabled = null;
+    #__statusConfig = null;
+
+    /**
+     * @param identifier {String} A unique identifier to identify this individual upload task.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     * @param sizeThresholdForMultipartUploadBytes {Number} The size threshold in bytes for when to use multipart uploads. Uploads over this size will automatically use a multipart upload strategy, while uploads equal or smaller than this threshold will use a single connection to upload the whole object.
+     * @param priority {Number} Priority for this upload task. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @param disabled {Boolean} Enable or disable this export. Default is false.
+     * @param statusConfig {aws-greengrass-core-sdk.StreamManager.StatusConfig} Event status configuration that specifies the target status stream and verbosity.
+     */
+    constructor(
+        identifier = null,
+        sizeThresholdForMultipartUploadBytes = null,
+        priority = null,
+        disabled = null,
+        statusConfig = null,
+    ) {
+        if (identifier !== null && !(typeof identifier === "string")) {
+            throw new Error("identifier must be String");
+        }
+
+        if (sizeThresholdForMultipartUploadBytes !== null && !(typeof sizeThresholdForMultipartUploadBytes === "number")) {
+            throw new Error("sizeThresholdForMultipartUploadBytes must be Number");
+        }
+
+        if (priority !== null && !(typeof priority === "number")) {
+            throw new Error("priority must be Number");
+        }
+
+        if (disabled !== null && !(typeof disabled === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        if (statusConfig !== null && !(statusConfig instanceof StatusConfig)) {
+            throw new Error("statusConfig must be StatusConfig");
+        }
+
+        this.#__identifier = identifier;
+        this.#__sizeThresholdForMultipartUploadBytes = sizeThresholdForMultipartUploadBytes;
+        this.#__priority = priority;
+        this.#__disabled = disabled;
+        this.#__statusConfig = statusConfig;
+    }
+
+    /**
+     * A unique identifier to identify this individual upload task.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     * @returns {String}
+
+     */
+    get identifier() {
+        return this.#__identifier;
+    }
+    /**
+     * @param value {String} A unique identifier to identify this individual upload task.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     */
+    set identifier(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("identifier must be String");
+        }
+
+        this.#__identifier = value;
+    }
+    /**
+     * @param value {String} A unique identifier to identify this individual upload task.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig}
+     */
+    withIdentifier(value) {
+        this.identifier = value;
+        return this;
+    }
+
+    /**
+     * The size threshold in bytes for when to use multipart uploads. Uploads over this size will automatically use a multipart upload strategy, while uploads equal or smaller than this threshold will use a single connection to upload the whole object.
+     * @returns {Number}
+     
+     */
+    get sizeThresholdForMultipartUploadBytes() {
+        return this.#__sizeThresholdForMultipartUploadBytes;
+    }
+    /**
+     * @param value {Number} The size threshold in bytes for when to use multipart uploads. Uploads over this size will automatically use a multipart upload strategy, while uploads equal or smaller than this threshold will use a single connection to upload the whole object.
+     */
+    set sizeThresholdForMultipartUploadBytes(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("sizeThresholdForMultipartUploadBytes must be Number");
+        }
+
+        this.#__sizeThresholdForMultipartUploadBytes = value;
+    }
+    /**
+     * @param value {Number} The size threshold in bytes for when to use multipart uploads. Uploads over this size will automatically use a multipart upload strategy, while uploads equal or smaller than this threshold will use a single connection to upload the whole object.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig}
+     */
+    withSizeThresholdForMultipartUploadBytes(value) {
+        this.sizeThresholdForMultipartUploadBytes = value;
+        return this;
+    }
+
+    /**
+     * Priority for this upload task. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @returns {Number}
+     
+     */
+    get priority() {
+        return this.#__priority;
+    }
+    /**
+     * @param value {Number} Priority for this upload task. Lower values are higher priority. If not specified it will have the lowest priority.
+     */
+    set priority(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("priority must be Number");
+        }
+
+        this.#__priority = value;
+    }
+    /**
+     * @param value {Number} Priority for this upload task. Lower values are higher priority. If not specified it will have the lowest priority.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig}
+     */
+    withPriority(value) {
+        this.priority = value;
+        return this;
+    }
+
+    /**
+     * Enable or disable this export. Default is false.
+     * @returns {Boolean}
+     
+     */
+    get disabled() {
+        return this.#__disabled;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     */
+    set disabled(value) {
+        if (value !== null && !(typeof value === "boolean")) {
+            throw new Error("disabled must be Boolean");
+        }
+
+        this.#__disabled = value;
+    }
+    /**
+     * @param value {Boolean} Enable or disable this export. Default is false.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig}
+     */
+    withDisabled(value) {
+        this.disabled = value;
+        return this;
+    }
+
+    /**
+     * Event status configuration that specifies the target status stream and verbosity.
+     * @returns {aws-greengrass-core-sdk.StreamManager.StatusConfig}
+     
+     */
+    get statusConfig() {
+        return this.#__statusConfig;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusConfig} Event status configuration that specifies the target status stream and verbosity.
+     */
+    set statusConfig(value) {
+        if (value !== null && !(value instanceof StatusConfig)) {
+            throw new Error("statusConfig must be StatusConfig");
+        }
+
+        this.#__statusConfig = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.StatusConfig} Event status configuration that specifies the target status stream and verbosity.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig}
+     */
+    withStatusConfig(value) {
+        this.statusConfig = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new S3ExportTaskExecutorConfig();
+        if ("identifier" in d) {
+            ret.identifier = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["identifier"]) : d["identifier"];
+        }
+        if ("sizeThresholdForMultipartUploadBytes" in d) {
+            ret.sizeThresholdForMultipartUploadBytes = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["sizeThresholdForMultipartUploadBytes"]) : d["sizeThresholdForMultipartUploadBytes"];
+        }
+        if ("priority" in d) {
+            ret.priority = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["priority"]) : d["priority"];
+        }
+        if ("disabled" in d) {
+            ret.disabled = Object.prototype.hasOwnProperty.call(Boolean, "fromMap") ? Boolean.fromMap(d["disabled"]) : d["disabled"];
+        }
+        if ("statusConfig" in d) {
+            ret.statusConfig = Object.prototype.hasOwnProperty.call(StatusConfig, "fromMap") ? StatusConfig.fromMap(d["statusConfig"]) : d["statusConfig"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.identifier !== null) {
+            d["identifier"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.identifier), "asMap") ? this.identifier.asMap() : this.identifier;
+        }
+        if (this.sizeThresholdForMultipartUploadBytes !== null) {
+            d["sizeThresholdForMultipartUploadBytes"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sizeThresholdForMultipartUploadBytes), "asMap") ? this.sizeThresholdForMultipartUploadBytes.asMap() : this.sizeThresholdForMultipartUploadBytes;
+        }
+        if (this.priority !== null) {
+            d["priority"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.priority), "asMap") ? this.priority.asMap() : this.priority;
+        }
+        if (this.disabled !== null) {
+            d["disabled"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.disabled), "asMap") ? this.disabled.asMap() : this.disabled;
+        }
+        if (this.statusConfig !== null) {
+            d["statusConfig"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.statusConfig), "asMap") ? this.statusConfig.asMap() : this.statusConfig;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(S3ExportTaskExecutorConfig, "typesMap", {
+    value: {
+        identifier: {
+            'type': String,
+            'subtype': null
+        },
+        sizeThresholdForMultipartUploadBytes: {
+            'type': Number,
+            'subtype': null
+        },
+        priority: {
+            'type': Number,
+            'subtype': null
+        },
+        disabled: {
+            'type': Boolean,
+            'subtype': null
+        },
+        statusConfig: {
+            'type': StatusConfig,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(S3ExportTaskExecutorConfig, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(S3ExportTaskExecutorConfig, "validationsMap", {
+    value: {
+        'identifier': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 255,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'sizeThresholdForMultipartUploadBytes': {
+            'required': false,
+            'minimum': 5242880,
+        },
+        'priority': {
+            'required': false,
+            'maximum': 10,
+            'minimum': 1,
+        },
+        'disabled': {
+            'required': false,
+        },
+        'statusConfig': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * Defines how and where the stream is uploaded.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -2228,16 +4789,22 @@ class ExportDefinition {
     #__http = null;
     #__iotAnalytics = null;
     #__kinesis = null;
+    #__IotSitewise = null;
+    #__s3TaskExecutor = null;
 
     /**
-     * @param http {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]} Defines how the stream is uploaded to an HTTP endpoint
-     * @param iotAnalytics {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]} Defines how the stream is uploaded to IoT Analytics
-     * @param kinesis {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]} Defines how the stream is uploaded to Kinesis
+     * @param http {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]} Defines how the stream is uploaded to an HTTP endpoint.
+     * @param iotAnalytics {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]} Defines how the stream is uploaded to IoT Analytics.
+     * @param kinesis {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]} Defines how the stream is uploaded to Kinesis.
+     * @param IotSitewise {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig[]} Defines how the stream is uploaded to IoT SiteWise.
+     * @param s3TaskExecutor {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig[]} Defines the list of configs for S3 task executors.
      */
     constructor(
         http = null,
         iotAnalytics = null,
         kinesis = null,
+        IotSitewise = null,
+        s3TaskExecutor = null,
     ) {
         if (http !== null && !(http instanceof Array)) {
             throw new Error("http must be Array");
@@ -2260,13 +4827,29 @@ class ExportDefinition {
             throw new Error("kinesis array values must be KinesisConfig");
         }
 
+        if (IotSitewise !== null && !(IotSitewise instanceof Array)) {
+            throw new Error("IotSitewise must be Array");
+        }
+        if (IotSitewise !== null && !IotSitewise.every((v) => v instanceof IoTSiteWiseConfig)) {
+            throw new Error("IotSitewise array values must be IoTSiteWiseConfig");
+        }
+
+        if (s3TaskExecutor !== null && !(s3TaskExecutor instanceof Array)) {
+            throw new Error("s3TaskExecutor must be Array");
+        }
+        if (s3TaskExecutor !== null && !s3TaskExecutor.every((v) => v instanceof S3ExportTaskExecutorConfig)) {
+            throw new Error("s3TaskExecutor array values must be S3ExportTaskExecutorConfig");
+        }
+
         this.#__http = http;
         this.#__iotAnalytics = iotAnalytics;
         this.#__kinesis = kinesis;
+        this.#__IotSitewise = IotSitewise;
+        this.#__s3TaskExecutor = s3TaskExecutor;
     }
 
     /**
-     * Defines how the stream is uploaded to an HTTP endpoint
+     * Defines how the stream is uploaded to an HTTP endpoint.
      * @returns {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]}
      
      */
@@ -2274,7 +4857,7 @@ class ExportDefinition {
         return this.#__http;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]} Defines how the stream is uploaded to an HTTP endpoint
+     * @param value {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]} Defines how the stream is uploaded to an HTTP endpoint.
      */
     set http(value) {
         if (value !== null && !(value instanceof Array)) {
@@ -2287,7 +4870,7 @@ class ExportDefinition {
         this.#__http = value;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]} Defines how the stream is uploaded to an HTTP endpoint
+     * @param value {aws-greengrass-core-sdk.StreamManager.HTTPConfig[]} Defines how the stream is uploaded to an HTTP endpoint.
      * @returns {aws-greengrass-core-sdk.StreamManager.ExportDefinition}
      */
     withHttp(value) {
@@ -2296,7 +4879,7 @@ class ExportDefinition {
     }
 
     /**
-     * Defines how the stream is uploaded to IoT Analytics
+     * Defines how the stream is uploaded to IoT Analytics.
      * @returns {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]}
      
      */
@@ -2304,7 +4887,7 @@ class ExportDefinition {
         return this.#__iotAnalytics;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]} Defines how the stream is uploaded to IoT Analytics
+     * @param value {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]} Defines how the stream is uploaded to IoT Analytics.
      */
     set iotAnalytics(value) {
         if (value !== null && !(value instanceof Array)) {
@@ -2317,7 +4900,7 @@ class ExportDefinition {
         this.#__iotAnalytics = value;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]} Defines how the stream is uploaded to IoT Analytics
+     * @param value {aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig[]} Defines how the stream is uploaded to IoT Analytics.
      * @returns {aws-greengrass-core-sdk.StreamManager.ExportDefinition}
      */
     withIotAnalytics(value) {
@@ -2326,7 +4909,7 @@ class ExportDefinition {
     }
 
     /**
-     * Defines how the stream is uploaded to Kinesis
+     * Defines how the stream is uploaded to Kinesis.
      * @returns {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]}
      
      */
@@ -2334,7 +4917,7 @@ class ExportDefinition {
         return this.#__kinesis;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]} Defines how the stream is uploaded to Kinesis
+     * @param value {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]} Defines how the stream is uploaded to Kinesis.
      */
     set kinesis(value) {
         if (value !== null && !(value instanceof Array)) {
@@ -2347,11 +4930,71 @@ class ExportDefinition {
         this.#__kinesis = value;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]} Defines how the stream is uploaded to Kinesis
+     * @param value {aws-greengrass-core-sdk.StreamManager.KinesisConfig[]} Defines how the stream is uploaded to Kinesis.
      * @returns {aws-greengrass-core-sdk.StreamManager.ExportDefinition}
      */
     withKinesis(value) {
         this.kinesis = value;
+        return this;
+    }
+
+    /**
+     * Defines how the stream is uploaded to IoT SiteWise.
+     * @returns {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig[]}
+     
+     */
+    get IotSitewise() {
+        return this.#__IotSitewise;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig[]} Defines how the stream is uploaded to IoT SiteWise.
+     */
+    set IotSitewise(value) {
+        if (value !== null && !(value instanceof Array)) {
+            throw new Error("IotSitewise must be Array");
+        }
+        if (value !== null && !value.every((v) => v instanceof IoTSiteWiseConfig)) {
+            throw new Error("IotSitewise array values must be IoTSiteWiseConfig");
+        }
+
+        this.#__IotSitewise = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig[]} Defines how the stream is uploaded to IoT SiteWise.
+     * @returns {aws-greengrass-core-sdk.StreamManager.ExportDefinition}
+     */
+    withIotSitewise(value) {
+        this.IotSitewise = value;
+        return this;
+    }
+
+    /**
+     * Defines the list of configs for S3 task executors.
+     * @returns {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig[]}
+     
+     */
+    get s3TaskExecutor() {
+        return this.#__s3TaskExecutor;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig[]} Defines the list of configs for S3 task executors.
+     */
+    set s3TaskExecutor(value) {
+        if (value !== null && !(value instanceof Array)) {
+            throw new Error("s3TaskExecutor must be Array");
+        }
+        if (value !== null && !value.every((v) => v instanceof S3ExportTaskExecutorConfig)) {
+            throw new Error("s3TaskExecutor array values must be S3ExportTaskExecutorConfig");
+        }
+
+        this.#__s3TaskExecutor = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig[]} Defines the list of configs for S3 task executors.
+     * @returns {aws-greengrass-core-sdk.StreamManager.ExportDefinition}
+     */
+    withS3TaskExecutor(value) {
+        this.s3TaskExecutor = value;
         return this;
     }
 
@@ -2372,6 +5015,18 @@ class ExportDefinition {
         if ("kinesis" in d) {
             ret.kinesis = d["kinesis"].reduce((acc, v) => {
                 acc.push(Object.prototype.hasOwnProperty.call(KinesisConfig, "fromMap") ? KinesisConfig.fromMap(v) : v);
+                return acc;
+            }, []);
+        }
+        if ("IotSitewise" in d) {
+            ret.IotSitewise = d["IotSitewise"].reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(IoTSiteWiseConfig, "fromMap") ? IoTSiteWiseConfig.fromMap(v) : v);
+                return acc;
+            }, []);
+        }
+        if ("s3TaskExecutor" in d) {
+            ret.s3TaskExecutor = d["s3TaskExecutor"].reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(S3ExportTaskExecutorConfig, "fromMap") ? S3ExportTaskExecutorConfig.fromMap(v) : v);
                 return acc;
             }, []);
         }
@@ -2398,6 +5053,18 @@ class ExportDefinition {
                 return acc;
             }, []);
         }
+        if (this.IotSitewise !== null) {
+            d["IotSitewise"] = this.IotSitewise.reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(v), "asMap") ? v.asMap() : v);
+                return acc;
+            }, []);
+        }
+        if (this.s3TaskExecutor !== null) {
+            d["s3TaskExecutor"] = this.s3TaskExecutor.reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(v), "asMap") ? v.asMap() : v);
+                return acc;
+            }, []);
+        }
         return d;
     }
 };
@@ -2416,6 +5083,14 @@ Object.defineProperty(ExportDefinition, "typesMap", {
             'type': Array,
             'subtype': KinesisConfig
         },
+        IotSitewise: {
+            'type': Array,
+            'subtype': IoTSiteWiseConfig
+        },
+        s3TaskExecutor: {
+            'type': Array,
+            'subtype': S3ExportTaskExecutorConfig
+        },
     }
 });
 Object.defineProperty(ExportDefinition, "formatsMap", {
@@ -2432,11 +5107,74 @@ Object.defineProperty(ExportDefinition, "validationsMap", {
         'kinesis': {
             'required': false,
         },
+        'IotSitewise': {
+            'required': false,
+        },
+        's3TaskExecutor': {
+            'required': false,
+        },
     }
 });
 
 /**
- * Object defining a message stream used in the CreateMessageStream API.
+ * StrategyOnFull is used in the MessageStreamDefinition when creating a stream.
+   It defines the behavior when the stream has reached the maximum size.
+   RejectNewData: any append message request after the stream is full will be rejected with an exception.
+   OverwriteOldestData: the oldest stream segments will be deleted until there is room for the new message.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class StrategyOnFull {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(StrategyOnFull.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return StrategyOnFull[StrategyOnFull.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(StrategyOnFull, "options", {
+    value: {
+        RejectNewData: 0,
+        OverwriteOldestData: 1,
+    }
+});
+Object.defineProperty(StrategyOnFull, "optionsFlipped", {
+    value: {
+        0: "RejectNewData",
+        1: "OverwriteOldestData",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StrategyOnFull} RejectNewData
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StrategyOnFull#
+ * @readonly
+ */
+Object.defineProperty(StrategyOnFull, "RejectNewData", {
+    value: new StrategyOnFull(0)
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.StrategyOnFull} OverwriteOldestData
+ * @memberOf aws-greengrass-core-sdk.StreamManager.StrategyOnFull#
+ * @readonly
+ */
+Object.defineProperty(StrategyOnFull, "OverwriteOldestData", {
+    value: new StrategyOnFull(1)
+});
+
+/**
+ * Object defining a message stream used in the CreateMessageStream and UpdateMessageStream API.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -2894,7 +5632,1085 @@ Object.defineProperty(MessageStreamDefinition, "validationsMap", {
 });
 
 /**
- * Message stream information including its definition, storage status and export status
+ * (Internal Only) Request object for creating a message stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class CreateMessageStreamRequest {
+    #__requestId = null;
+    #__definition = null;
+
+    /**
+     * @param requestId {String} 
+     * @param definition {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
+     */
+    constructor(
+        requestId = null,
+        definition = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (definition !== null && !(definition instanceof MessageStreamDefinition)) {
+            throw new Error("definition must be MessageStreamDefinition");
+        }
+
+        this.#__requestId = requestId;
+        this.#__definition = definition;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition}
+     
+     */
+    get definition() {
+        return this.#__definition;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
+     */
+    set definition(value) {
+        if (value !== null && !(value instanceof MessageStreamDefinition)) {
+            throw new Error("definition must be MessageStreamDefinition");
+        }
+
+        this.#__definition = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest}
+     */
+    withDefinition(value) {
+        this.definition = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new CreateMessageStreamRequest();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("definition" in d) {
+            ret.definition = Object.prototype.hasOwnProperty.call(MessageStreamDefinition, "fromMap") ? MessageStreamDefinition.fromMap(d["definition"]) : d["definition"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.definition !== null) {
+            d["definition"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.definition), "asMap") ? this.definition.asMap() : this.definition;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(CreateMessageStreamRequest, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        definition: {
+            'type': MessageStreamDefinition,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(CreateMessageStreamRequest, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(CreateMessageStreamRequest, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'definition': {
+            'required': true,
+        },
+    }
+});
+
+/**
+ * Internal Only.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class CreateMessageStreamResponse {
+    #__requestId = null;
+    #__status = null;
+    #__errorMessage = null;
+
+    /**
+     * @param requestId {String} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @param errorMessage {String} 
+     */
+    constructor(
+        requestId = null,
+        status = null,
+        errorMessage = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (status !== null && !(status instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        if (errorMessage !== null && !(typeof errorMessage === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__requestId = requestId;
+        this.#__status = status;
+        this.#__errorMessage = errorMessage;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get errorMessage() {
+        return this.#__errorMessage;
+    }
+    /**
+     * @param value {String} 
+     */
+    set errorMessage(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__errorMessage = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse}
+     */
+    withErrorMessage(value) {
+        this.errorMessage = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new CreateMessageStreamResponse();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
+        }
+        if ("errorMessage" in d) {
+            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.errorMessage !== null) {
+            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(CreateMessageStreamResponse, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        status: {
+            'type': ResponseStatusCode,
+            'subtype': null
+        },
+        errorMessage: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(CreateMessageStreamResponse, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(CreateMessageStreamResponse, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'status': {
+            'required': true,
+        },
+        'errorMessage': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * (Internal Only) Request object for updating a message stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class UpdateMessageStreamRequest {
+    #__requestId = null;
+    #__definition = null;
+
+    /**
+     * @param requestId {String} 
+     * @param definition {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
+     */
+    constructor(
+        requestId = null,
+        definition = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (definition !== null && !(definition instanceof MessageStreamDefinition)) {
+            throw new Error("definition must be MessageStreamDefinition");
+        }
+
+        this.#__requestId = requestId;
+        this.#__definition = definition;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamRequest}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition}
+     
+     */
+    get definition() {
+        return this.#__definition;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
+     */
+    set definition(value) {
+        if (value !== null && !(value instanceof MessageStreamDefinition)) {
+            throw new Error("definition must be MessageStreamDefinition");
+        }
+
+        this.#__definition = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamRequest}
+     */
+    withDefinition(value) {
+        this.definition = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new UpdateMessageStreamRequest();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("definition" in d) {
+            ret.definition = Object.prototype.hasOwnProperty.call(MessageStreamDefinition, "fromMap") ? MessageStreamDefinition.fromMap(d["definition"]) : d["definition"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.definition !== null) {
+            d["definition"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.definition), "asMap") ? this.definition.asMap() : this.definition;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(UpdateMessageStreamRequest, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        definition: {
+            'type': MessageStreamDefinition,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(UpdateMessageStreamRequest, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(UpdateMessageStreamRequest, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'definition': {
+            'required': true,
+        },
+    }
+});
+
+/**
+ * (Internal Only) Response for UpdateMessageStreamRequest.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class UpdateMessageStreamResponse {
+    #__requestId = null;
+    #__status = null;
+    #__errorMessage = null;
+
+    /**
+     * @param requestId {String} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @param errorMessage {String} 
+     */
+    constructor(
+        requestId = null,
+        status = null,
+        errorMessage = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (status !== null && !(status instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        if (errorMessage !== null && !(typeof errorMessage === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__requestId = requestId;
+        this.#__status = status;
+        this.#__errorMessage = errorMessage;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get errorMessage() {
+        return this.#__errorMessage;
+    }
+    /**
+     * @param value {String} 
+     */
+    set errorMessage(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__errorMessage = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse}
+     */
+    withErrorMessage(value) {
+        this.errorMessage = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new UpdateMessageStreamResponse();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
+        }
+        if ("errorMessage" in d) {
+            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.errorMessage !== null) {
+            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(UpdateMessageStreamResponse, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        status: {
+            'type': ResponseStatusCode,
+            'subtype': null
+        },
+        errorMessage: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(UpdateMessageStreamResponse, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(UpdateMessageStreamResponse, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'status': {
+            'required': true,
+        },
+        'errorMessage': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * (Internal Only) Request object for deleting a message stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class DeleteMessageStreamRequest {
+    #__requestId = null;
+    #__name = null;
+
+    /**
+     * @param requestId {String} 
+     * @param name {String} 
+     */
+    constructor(
+        requestId = null,
+        name = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (name !== null && !(typeof name === "string")) {
+            throw new Error("name must be String");
+        }
+
+        this.#__requestId = requestId;
+        this.#__name = name;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get name() {
+        return this.#__name;
+    }
+    /**
+     * @param value {String} 
+     */
+    set name(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("name must be String");
+        }
+
+        this.#__name = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest}
+     */
+    withName(value) {
+        this.name = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new DeleteMessageStreamRequest();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("name" in d) {
+            ret.name = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["name"]) : d["name"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.name !== null) {
+            d["name"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.name), "asMap") ? this.name.asMap() : this.name;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(DeleteMessageStreamRequest, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        name: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(DeleteMessageStreamRequest, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(DeleteMessageStreamRequest, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'name': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 255,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+    }
+});
+
+/**
+ * Internal Only.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class DeleteMessageStreamResponse {
+    #__requestId = null;
+    #__status = null;
+    #__errorMessage = null;
+
+    /**
+     * @param requestId {String} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @param errorMessage {String} 
+     */
+    constructor(
+        requestId = null,
+        status = null,
+        errorMessage = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (status !== null && !(status instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        if (errorMessage !== null && !(typeof errorMessage === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__requestId = requestId;
+        this.#__status = status;
+        this.#__errorMessage = errorMessage;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get errorMessage() {
+        return this.#__errorMessage;
+    }
+    /**
+     * @param value {String} 
+     */
+    set errorMessage(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__errorMessage = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse}
+     */
+    withErrorMessage(value) {
+        this.errorMessage = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new DeleteMessageStreamResponse();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
+        }
+        if ("errorMessage" in d) {
+            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.errorMessage !== null) {
+            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(DeleteMessageStreamResponse, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        status: {
+            'type': ResponseStatusCode,
+            'subtype': null
+        },
+        errorMessage: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(DeleteMessageStreamResponse, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(DeleteMessageStreamResponse, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'status': {
+            'required': true,
+        },
+        'errorMessage': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * (Internal Only) Request object for describing a message stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class DescribeMessageStreamRequest {
+    #__requestId = null;
+    #__name = null;
+
+    /**
+     * @param requestId {String} 
+     * @param name {String} 
+     */
+    constructor(
+        requestId = null,
+        name = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (name !== null && !(typeof name === "string")) {
+            throw new Error("name must be String");
+        }
+
+        this.#__requestId = requestId;
+        this.#__name = name;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get name() {
+        return this.#__name;
+    }
+    /**
+     * @param value {String} 
+     */
+    set name(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("name must be String");
+        }
+
+        this.#__name = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest}
+     */
+    withName(value) {
+        this.name = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new DescribeMessageStreamRequest();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("name" in d) {
+            ret.name = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["name"]) : d["name"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.name !== null) {
+            d["name"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.name), "asMap") ? this.name.asMap() : this.name;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(DescribeMessageStreamRequest, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        name: {
+            'type': String,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(DescribeMessageStreamRequest, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(DescribeMessageStreamRequest, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'name': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 255,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+    }
+});
+
+/**
+ * Message stream information including its definition, storage status and export status.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -2906,7 +6722,7 @@ class MessageStreamInfo {
 
     /**
      * @param definition {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
-     * @param storageStatus {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus} Stream status including oldest/newest sequence number and total bytes
+     * @param storageStatus {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus} Stream status including oldest/newest sequence number and total bytes.
      * @param exportStatuses {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses[]} 
      */
     constructor(
@@ -2961,7 +6777,7 @@ class MessageStreamInfo {
     }
 
     /**
-     * Stream status including oldest/newest sequence number and total bytes
+     * Stream status including oldest/newest sequence number and total bytes.
      * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus}
      
      */
@@ -2969,7 +6785,7 @@ class MessageStreamInfo {
         return this.#__storageStatus;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus} Stream status including oldest/newest sequence number and total bytes
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus} Stream status including oldest/newest sequence number and total bytes.
      */
     set storageStatus(value) {
         if (value !== null && !(value instanceof MessageStreamInfo._storageStatus)) {
@@ -2979,7 +6795,7 @@ class MessageStreamInfo {
         this.#__storageStatus = value;
     }
     /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus} Stream status including oldest/newest sequence number and total bytes
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._storageStatus} Stream status including oldest/newest sequence number and total bytes.
      * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo}
      */
     withStorageStatus(value) {
@@ -3053,7 +6869,7 @@ class MessageStreamInfo {
 
 MessageStreamInfo._storageStatus =
     /**
-     * Stream status including oldest/newest sequence number and total bytes
+     * Stream status including oldest/newest sequence number and total bytes.
      *
      * @class
      * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -3235,7 +7051,7 @@ Object.defineProperty(MessageStreamInfo._storageStatus, "validationsMap", {
 
 MessageStreamInfo._exportStatuses =
     /**
-     * Export status including the export identifier and the last exported sequence number for that export task
+     * Export status including the export identifier and the last exported sequence number for that export task.
      *
      * @class
      * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -3245,18 +7061,24 @@ MessageStreamInfo._exportStatuses =
         #__lastExportedSequenceNumber = null;
         #__lastExportTime = null;
         #__errorMessage = null;
+        #__exportedBytesFromStream = null;
+        #__exportedMessagesCount = null;
 
         /**
          * @param exportConfigIdentifier {String} The unique export identifier.
          * @param lastExportedSequenceNumber {Number} The sequence number of the last message which was successfully exported.
          * @param lastExportTime {Number} The last time an export was attempted. Data is Unix epoch time in milliseconds.
          * @param errorMessage {String} Error message from the last export attempt if it failed.
+         * @param exportedBytesFromStream {Number} Total bytes exported from the stream for this Export Config. It does not include the failed export attempts or messages which are skipped because of some non-retryable error.
+         * @param exportedMessagesCount {Number} Total messages exported/processed.
          */
         constructor(
             exportConfigIdentifier = null,
             lastExportedSequenceNumber = null,
             lastExportTime = null,
             errorMessage = null,
+            exportedBytesFromStream = null,
+            exportedMessagesCount = null,
         ) {
             if (exportConfigIdentifier !== null && !(typeof exportConfigIdentifier === "string")) {
                 throw new Error("exportConfigIdentifier must be String");
@@ -3274,10 +7096,20 @@ MessageStreamInfo._exportStatuses =
                 throw new Error("errorMessage must be String");
             }
 
+            if (exportedBytesFromStream !== null && !(typeof exportedBytesFromStream === "number")) {
+                throw new Error("exportedBytesFromStream must be Number");
+            }
+
+            if (exportedMessagesCount !== null && !(typeof exportedMessagesCount === "number")) {
+                throw new Error("exportedMessagesCount must be Number");
+            }
+
             this.#__exportConfigIdentifier = exportConfigIdentifier;
             this.#__lastExportedSequenceNumber = lastExportedSequenceNumber;
             this.#__lastExportTime = lastExportTime;
             this.#__errorMessage = errorMessage;
+            this.#__exportedBytesFromStream = exportedBytesFromStream;
+            this.#__exportedMessagesCount = exportedMessagesCount;
         }
 
         /**
@@ -3388,6 +7220,60 @@ MessageStreamInfo._exportStatuses =
             return this;
         }
 
+        /**
+         * Total bytes exported from the stream for this Export Config. It does not include the failed export attempts or messages which are skipped because of some non-retryable error.
+         * @returns {Number}
+         
+         */
+        get exportedBytesFromStream() {
+            return this.#__exportedBytesFromStream;
+        }
+        /**
+         * @param value {Number} Total bytes exported from the stream for this Export Config. It does not include the failed export attempts or messages which are skipped because of some non-retryable error.
+         */
+        set exportedBytesFromStream(value) {
+            if (value !== null && !(typeof value === "number")) {
+                throw new Error("exportedBytesFromStream must be Number");
+            }
+
+            this.#__exportedBytesFromStream = value;
+        }
+        /**
+         * @param value {Number} Total bytes exported from the stream for this Export Config. It does not include the failed export attempts or messages which are skipped because of some non-retryable error.
+         * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses}
+         */
+        withExportedBytesFromStream(value) {
+            this.exportedBytesFromStream = value;
+            return this;
+        }
+
+        /**
+         * Total messages exported/processed.
+         * @returns {Number}
+         
+         */
+        get exportedMessagesCount() {
+            return this.#__exportedMessagesCount;
+        }
+        /**
+         * @param value {Number} Total messages exported/processed.
+         */
+        set exportedMessagesCount(value) {
+            if (value !== null && !(typeof value === "number")) {
+                throw new Error("exportedMessagesCount must be Number");
+            }
+
+            this.#__exportedMessagesCount = value;
+        }
+        /**
+         * @param value {Number} Total messages exported/processed.
+         * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo~MessageStreamInfo._exportStatuses}
+         */
+        withExportedMessagesCount(value) {
+            this.exportedMessagesCount = value;
+            return this;
+        }
+
         static fromMap(d) {
             const ret = new MessageStreamInfo._exportStatuses();
             if ("exportConfigIdentifier" in d) {
@@ -3401,6 +7287,12 @@ MessageStreamInfo._exportStatuses =
             }
             if ("errorMessage" in d) {
                 ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+            }
+            if ("exportedBytesFromStream" in d) {
+                ret.exportedBytesFromStream = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["exportedBytesFromStream"]) : d["exportedBytesFromStream"];
+            }
+            if ("exportedMessagesCount" in d) {
+                ret.exportedMessagesCount = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["exportedMessagesCount"]) : d["exportedMessagesCount"];
             }
             return ret;
         }
@@ -3418,6 +7310,12 @@ MessageStreamInfo._exportStatuses =
             }
             if (this.errorMessage !== null) {
                 d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+            }
+            if (this.exportedBytesFromStream !== null) {
+                d["exportedBytesFromStream"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.exportedBytesFromStream), "asMap") ? this.exportedBytesFromStream.asMap() : this.exportedBytesFromStream;
+            }
+            if (this.exportedMessagesCount !== null) {
+                d["exportedMessagesCount"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.exportedMessagesCount), "asMap") ? this.exportedMessagesCount.asMap() : this.exportedMessagesCount;
             }
             return d;
         }
@@ -3441,6 +7339,14 @@ Object.defineProperty(MessageStreamInfo._exportStatuses, "typesMap", {
             'type': String,
             'subtype': null
         },
+        exportedBytesFromStream: {
+            'type': Number,
+            'subtype': null
+        },
+        exportedMessagesCount: {
+            'type': Number,
+            'subtype': null
+        },
     }
 });
 Object.defineProperty(MessageStreamInfo._exportStatuses, "formatsMap", {
@@ -3458,6 +7364,12 @@ Object.defineProperty(MessageStreamInfo._exportStatuses, "validationsMap", {
             'required': false,
         },
         'errorMessage': {
+            'required': false,
+        },
+        'exportedBytesFromStream': {
+            'required': false,
+        },
+        'exportedMessagesCount': {
             'required': false,
         },
     }
@@ -3497,134 +7409,323 @@ Object.defineProperty(MessageStreamInfo, "validationsMap", {
 });
 
 /**
- * Message object containing metadata and the user's payload
+ * (Internal Only) Response object for describing a message stream.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
  */
-class Message {
-    #__streamName = null;
-    #__sequenceNumber = null;
-    #__ingestTime = null;
+class DescribeMessageStreamResponse {
+    #__requestId = null;
+    #__status = null;
+    #__errorMessage = null;
+    #__messageStreamInfo = null;
+
+    /**
+     * @param requestId {String} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @param errorMessage {String} 
+     * @param messageStreamInfo {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo} 
+     */
+    constructor(
+        requestId = null,
+        status = null,
+        errorMessage = null,
+        messageStreamInfo = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (status !== null && !(status instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        if (errorMessage !== null && !(typeof errorMessage === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        if (messageStreamInfo !== null && !(messageStreamInfo instanceof MessageStreamInfo)) {
+            throw new Error("messageStreamInfo must be MessageStreamInfo");
+        }
+
+        this.#__requestId = requestId;
+        this.#__status = status;
+        this.#__errorMessage = errorMessage;
+        this.#__messageStreamInfo = messageStreamInfo;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get errorMessage() {
+        return this.#__errorMessage;
+    }
+    /**
+     * @param value {String} 
+     */
+    set errorMessage(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__errorMessage = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
+     */
+    withErrorMessage(value) {
+        this.errorMessage = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo}
+     
+     */
+    get messageStreamInfo() {
+        return this.#__messageStreamInfo;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo} 
+     */
+    set messageStreamInfo(value) {
+        if (value !== null && !(value instanceof MessageStreamInfo)) {
+            throw new Error("messageStreamInfo must be MessageStreamInfo");
+        }
+
+        this.#__messageStreamInfo = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
+     */
+    withMessageStreamInfo(value) {
+        this.messageStreamInfo = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new DescribeMessageStreamResponse();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
+        }
+        if ("errorMessage" in d) {
+            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+        }
+        if ("messageStreamInfo" in d) {
+            ret.messageStreamInfo = Object.prototype.hasOwnProperty.call(MessageStreamInfo, "fromMap") ? MessageStreamInfo.fromMap(d["messageStreamInfo"]) : d["messageStreamInfo"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.errorMessage !== null) {
+            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+        }
+        if (this.messageStreamInfo !== null) {
+            d["messageStreamInfo"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.messageStreamInfo), "asMap") ? this.messageStreamInfo.asMap() : this.messageStreamInfo;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(DescribeMessageStreamResponse, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        status: {
+            'type': ResponseStatusCode,
+            'subtype': null
+        },
+        errorMessage: {
+            'type': String,
+            'subtype': null
+        },
+        messageStreamInfo: {
+            'type': MessageStreamInfo,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(DescribeMessageStreamResponse, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(DescribeMessageStreamResponse, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'status': {
+            'required': true,
+        },
+        'errorMessage': {
+            'required': false,
+        },
+        'messageStreamInfo': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * (Internal Only) Request object for appending to a message stream.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class AppendMessageRequest {
+    #__requestId = null;
+    #__name = null;
     #__payload = null;
 
     /**
-     * @param streamName {String} The name of the stream which this message is in.
-     * @param sequenceNumber {Number} The sequence number of this message within the stream.
-     * @param ingestTime {Number} The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
-     * @param payload {Buffer} The binary message data.
+     * @param requestId {String} 
+     * @param name {String} 
+     * @param payload {Buffer} 
      */
     constructor(
-        streamName = null,
-        sequenceNumber = null,
-        ingestTime = null,
+        requestId = null,
+        name = null,
         payload = null,
     ) {
-        if (streamName !== null && !(typeof streamName === "string")) {
-            throw new Error("streamName must be String");
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
         }
 
-        if (sequenceNumber !== null && !(typeof sequenceNumber === "number")) {
-            throw new Error("sequenceNumber must be Number");
-        }
-
-        if (ingestTime !== null && !(typeof ingestTime === "number")) {
-            throw new Error("ingestTime must be Number");
+        if (name !== null && !(typeof name === "string")) {
+            throw new Error("name must be String");
         }
 
         if (payload !== null && !(payload instanceof Buffer)) {
             throw new Error("payload must be Buffer");
         }
 
-        this.#__streamName = streamName;
-        this.#__sequenceNumber = sequenceNumber;
-        this.#__ingestTime = ingestTime;
+        this.#__requestId = requestId;
+        this.#__name = name;
         this.#__payload = payload;
     }
 
     /**
-     * The name of the stream which this message is in.
      * @returns {String}
      
      */
-    get streamName() {
-        return this.#__streamName;
+    get requestId() {
+        return this.#__requestId;
     }
     /**
-     * @param value {String} The name of the stream which this message is in.
+     * @param value {String} 
      */
-    set streamName(value) {
+    set requestId(value) {
         if (value !== null && !(typeof value === "string")) {
-            throw new Error("streamName must be String");
+            throw new Error("requestId must be String");
         }
 
-        this.#__streamName = value;
+        this.#__requestId = value;
     }
     /**
-     * @param value {String} The name of the stream which this message is in.
-     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageRequest}
      */
-    withStreamName(value) {
-        this.streamName = value;
+    withRequestId(value) {
+        this.requestId = value;
         return this;
     }
 
     /**
-     * The sequence number of this message within the stream.
-     * @returns {Number}
+     * @returns {String}
      
      */
-    get sequenceNumber() {
-        return this.#__sequenceNumber;
+    get name() {
+        return this.#__name;
     }
     /**
-     * @param value {Number} The sequence number of this message within the stream.
+     * @param value {String} 
      */
-    set sequenceNumber(value) {
-        if (value !== null && !(typeof value === "number")) {
-            throw new Error("sequenceNumber must be Number");
+    set name(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("name must be String");
         }
 
-        this.#__sequenceNumber = value;
+        this.#__name = value;
     }
     /**
-     * @param value {Number} The sequence number of this message within the stream.
-     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageRequest}
      */
-    withSequenceNumber(value) {
-        this.sequenceNumber = value;
+    withName(value) {
+        this.name = value;
         return this;
     }
 
     /**
-     * The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
-     * @returns {Number}
-     
-     */
-    get ingestTime() {
-        return this.#__ingestTime;
-    }
-    /**
-     * @param value {Number} The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
-     */
-    set ingestTime(value) {
-        if (value !== null && !(typeof value === "number")) {
-            throw new Error("ingestTime must be Number");
-        }
-
-        this.#__ingestTime = value;
-    }
-    /**
-     * @param value {Number} The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
-     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
-     */
-    withIngestTime(value) {
-        this.ingestTime = value;
-        return this;
-    }
-
-    /**
-     * The binary message data.
      * @returns {Buffer}
      
      */
@@ -3632,7 +7733,7 @@ class Message {
         return this.#__payload;
     }
     /**
-     * @param value {Buffer} The binary message data.
+     * @param value {Buffer} 
      */
     set payload(value) {
         if (value !== null && !(value instanceof Buffer)) {
@@ -3642,8 +7743,8 @@ class Message {
         this.#__payload = value;
     }
     /**
-     * @param value {Buffer} The binary message data.
-     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     * @param value {Buffer} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageRequest}
      */
     withPayload(value) {
         this.payload = value;
@@ -3651,15 +7752,12 @@ class Message {
     }
 
     static fromMap(d) {
-        const ret = new Message();
-        if ("streamName" in d) {
-            ret.streamName = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["streamName"]) : d["streamName"];
+        const ret = new AppendMessageRequest();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
         }
-        if ("sequenceNumber" in d) {
-            ret.sequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["sequenceNumber"]) : d["sequenceNumber"];
-        }
-        if ("ingestTime" in d) {
-            ret.ingestTime = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["ingestTime"]) : d["ingestTime"];
+        if ("name" in d) {
+            ret.name = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["name"]) : d["name"];
         }
         if ("payload" in d) {
             ret.payload = Object.prototype.hasOwnProperty.call(Buffer, "fromMap") ? Buffer.fromMap(d["payload"]) : d["payload"];
@@ -3669,14 +7767,11 @@ class Message {
 
     asMap() {
         const d = {};
-        if (this.streamName !== null) {
-            d["streamName"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.streamName), "asMap") ? this.streamName.asMap() : this.streamName;
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
         }
-        if (this.sequenceNumber !== null) {
-            d["sequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sequenceNumber), "asMap") ? this.sequenceNumber.asMap() : this.sequenceNumber;
-        }
-        if (this.ingestTime !== null) {
-            d["ingestTime"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.ingestTime), "asMap") ? this.ingestTime.asMap() : this.ingestTime;
+        if (this.name !== null) {
+            d["name"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.name), "asMap") ? this.name.asMap() : this.name;
         }
         if (this.payload !== null) {
             d["payload"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.payload), "asMap") ? this.payload.asMap() : this.payload;
@@ -3685,18 +7780,14 @@ class Message {
     }
 };
 
-Object.defineProperty(Message, "typesMap", {
+Object.defineProperty(AppendMessageRequest, "typesMap", {
     value: {
-        streamName: {
+        requestId: {
             'type': String,
             'subtype': null
         },
-        sequenceNumber: {
-            'type': Number,
-            'subtype': null
-        },
-        ingestTime: {
-            'type': Number,
+        name: {
+            'type': String,
             'subtype': null
         },
         payload: {
@@ -3705,22 +7796,252 @@ Object.defineProperty(Message, "typesMap", {
         },
     }
 });
-Object.defineProperty(Message, "formatsMap", {
+Object.defineProperty(AppendMessageRequest, "formatsMap", {
     value: {}
 });
-Object.defineProperty(Message, "validationsMap", {
+Object.defineProperty(AppendMessageRequest, "validationsMap", {
     value: {
-        'streamName': {
+        'requestId': {
             'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
         },
-        'sequenceNumber': {
-            'required': false,
-        },
-        'ingestTime': {
-            'required': false,
+        'name': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 255,
+            'pattern': /^[\w ,.\-_]*$/,
         },
         'payload': {
             'required': true,
+            'minLength': 1,
+        },
+    }
+});
+
+/**
+ * Internal Only.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class AppendMessageResponse {
+    #__requestId = null;
+    #__status = null;
+    #__errorMessage = null;
+    #__sequenceNumber = null;
+
+    /**
+     * @param requestId {String} 
+     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @param errorMessage {String} 
+     * @param sequenceNumber {Number} 
+     */
+    constructor(
+        requestId = null,
+        status = null,
+        errorMessage = null,
+        sequenceNumber = null,
+    ) {
+        if (requestId !== null && !(typeof requestId === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        if (status !== null && !(status instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        if (errorMessage !== null && !(typeof errorMessage === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        if (sequenceNumber !== null && !(typeof sequenceNumber === "number")) {
+            throw new Error("sequenceNumber must be Number");
+        }
+
+        this.#__requestId = requestId;
+        this.#__status = status;
+        this.#__errorMessage = errorMessage;
+        this.#__sequenceNumber = sequenceNumber;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get requestId() {
+        return this.#__requestId;
+    }
+    /**
+     * @param value {String} 
+     */
+    set requestId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("requestId must be String");
+        }
+
+        this.#__requestId = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
+     */
+    withRequestId(value) {
+        this.requestId = value;
+        return this;
+    }
+
+    /**
+     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
+     
+     */
+    get status() {
+        return this.#__status;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     */
+    set status(value) {
+        if (value !== null && !(value instanceof ResponseStatusCode)) {
+            throw new Error("status must be ResponseStatusCode");
+        }
+
+        this.#__status = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
+     */
+    withStatus(value) {
+        this.status = value;
+        return this;
+    }
+
+    /**
+     * @returns {String}
+     
+     */
+    get errorMessage() {
+        return this.#__errorMessage;
+    }
+    /**
+     * @param value {String} 
+     */
+    set errorMessage(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("errorMessage must be String");
+        }
+
+        this.#__errorMessage = value;
+    }
+    /**
+     * @param value {String} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
+     */
+    withErrorMessage(value) {
+        this.errorMessage = value;
+        return this;
+    }
+
+    /**
+     * @returns {Number}
+     
+     */
+    get sequenceNumber() {
+        return this.#__sequenceNumber;
+    }
+    /**
+     * @param value {Number} 
+     */
+    set sequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("sequenceNumber must be Number");
+        }
+
+        this.#__sequenceNumber = value;
+    }
+    /**
+     * @param value {Number} 
+     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
+     */
+    withSequenceNumber(value) {
+        this.sequenceNumber = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new AppendMessageResponse();
+        if ("requestId" in d) {
+            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
+        }
+        if ("status" in d) {
+            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
+        }
+        if ("errorMessage" in d) {
+            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
+        }
+        if ("sequenceNumber" in d) {
+            ret.sequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["sequenceNumber"]) : d["sequenceNumber"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.requestId !== null) {
+            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
+        }
+        if (this.status !== null) {
+            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
+        }
+        if (this.errorMessage !== null) {
+            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
+        }
+        if (this.sequenceNumber !== null) {
+            d["sequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sequenceNumber), "asMap") ? this.sequenceNumber.asMap() : this.sequenceNumber;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(AppendMessageResponse, "typesMap", {
+    value: {
+        requestId: {
+            'type': String,
+            'subtype': null
+        },
+        status: {
+            'type': ResponseStatusCode,
+            'subtype': null
+        },
+        errorMessage: {
+            'type': String,
+            'subtype': null
+        },
+        sequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(AppendMessageResponse, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(AppendMessageResponse, "validationsMap", {
+    value: {
+        'requestId': {
+            'required': true,
+            'minLength': 1,
+            'pattern': /^[\w ,.\-_]*$/,
+        },
+        'status': {
+            'required': true,
+        },
+        'errorMessage': {
+            'required': false,
+        },
+        'sequenceNumber': {
+            'required': false,
         },
     }
 });
@@ -3983,1409 +8304,6 @@ Object.defineProperty(ReadMessagesOptions, "validationsMap", {
 });
 
 /**
- * (Internal Only) Request object for creating a message stream
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class CreateMessageStreamRequest {
-    #__requestId = null;
-    #__definition = null;
-
-    /**
-     * @param requestId {String} 
-     * @param definition {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
-     */
-    constructor(
-        requestId = null,
-        definition = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (definition !== null && !(definition instanceof MessageStreamDefinition)) {
-            throw new Error("definition must be MessageStreamDefinition");
-        }
-
-        this.#__requestId = requestId;
-        this.#__definition = definition;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition}
-     
-     */
-    get definition() {
-        return this.#__definition;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
-     */
-    set definition(value) {
-        if (value !== null && !(value instanceof MessageStreamDefinition)) {
-            throw new Error("definition must be MessageStreamDefinition");
-        }
-
-        this.#__definition = value;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest}
-     */
-    withDefinition(value) {
-        this.definition = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new CreateMessageStreamRequest();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("definition" in d) {
-            ret.definition = Object.prototype.hasOwnProperty.call(MessageStreamDefinition, "fromMap") ? MessageStreamDefinition.fromMap(d["definition"]) : d["definition"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.definition !== null) {
-            d["definition"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.definition), "asMap") ? this.definition.asMap() : this.definition;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(CreateMessageStreamRequest, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        definition: {
-            'type': MessageStreamDefinition,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(CreateMessageStreamRequest, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(CreateMessageStreamRequest, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'definition': {
-            'required': true,
-        },
-    }
-});
-
-/**
- * Internal Only
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class CreateMessageStreamResponse {
-    #__requestId = null;
-    #__status = null;
-    #__errorMessage = null;
-
-    /**
-     * @param requestId {String} 
-     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @param errorMessage {String} 
-     */
-    constructor(
-        requestId = null,
-        status = null,
-        errorMessage = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (status !== null && !(status instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        if (errorMessage !== null && !(typeof errorMessage === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        this.#__requestId = requestId;
-        this.#__status = status;
-        this.#__errorMessage = errorMessage;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
-     
-     */
-    get status() {
-        return this.#__status;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     */
-    set status(value) {
-        if (value !== null && !(value instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        this.#__status = value;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse}
-     */
-    withStatus(value) {
-        this.status = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get errorMessage() {
-        return this.#__errorMessage;
-    }
-    /**
-     * @param value {String} 
-     */
-    set errorMessage(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        this.#__errorMessage = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse}
-     */
-    withErrorMessage(value) {
-        this.errorMessage = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new CreateMessageStreamResponse();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("status" in d) {
-            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
-        }
-        if ("errorMessage" in d) {
-            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.status !== null) {
-            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
-        }
-        if (this.errorMessage !== null) {
-            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(CreateMessageStreamResponse, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        status: {
-            'type': ResponseStatusCode,
-            'subtype': null
-        },
-        errorMessage: {
-            'type': String,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(CreateMessageStreamResponse, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(CreateMessageStreamResponse, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'status': {
-            'required': true,
-        },
-        'errorMessage': {
-            'required': false,
-        },
-    }
-});
-
-/**
- * (Internal Only) Request object for deleting a message stream
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class DeleteMessageStreamRequest {
-    #__requestId = null;
-    #__name = null;
-
-    /**
-     * @param requestId {String} 
-     * @param name {String} 
-     */
-    constructor(
-        requestId = null,
-        name = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (name !== null && !(typeof name === "string")) {
-            throw new Error("name must be String");
-        }
-
-        this.#__requestId = requestId;
-        this.#__name = name;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get name() {
-        return this.#__name;
-    }
-    /**
-     * @param value {String} 
-     */
-    set name(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("name must be String");
-        }
-
-        this.#__name = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest}
-     */
-    withName(value) {
-        this.name = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new DeleteMessageStreamRequest();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("name" in d) {
-            ret.name = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["name"]) : d["name"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.name !== null) {
-            d["name"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.name), "asMap") ? this.name.asMap() : this.name;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(DeleteMessageStreamRequest, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        name: {
-            'type': String,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(DeleteMessageStreamRequest, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(DeleteMessageStreamRequest, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'name': {
-            'required': true,
-            'minLength': 1,
-            'maxLength': 255,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-    }
-});
-
-/**
- * Internal Only
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class DeleteMessageStreamResponse {
-    #__requestId = null;
-    #__status = null;
-    #__errorMessage = null;
-
-    /**
-     * @param requestId {String} 
-     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @param errorMessage {String} 
-     */
-    constructor(
-        requestId = null,
-        status = null,
-        errorMessage = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (status !== null && !(status instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        if (errorMessage !== null && !(typeof errorMessage === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        this.#__requestId = requestId;
-        this.#__status = status;
-        this.#__errorMessage = errorMessage;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
-     
-     */
-    get status() {
-        return this.#__status;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     */
-    set status(value) {
-        if (value !== null && !(value instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        this.#__status = value;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse}
-     */
-    withStatus(value) {
-        this.status = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get errorMessage() {
-        return this.#__errorMessage;
-    }
-    /**
-     * @param value {String} 
-     */
-    set errorMessage(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        this.#__errorMessage = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse}
-     */
-    withErrorMessage(value) {
-        this.errorMessage = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new DeleteMessageStreamResponse();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("status" in d) {
-            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
-        }
-        if ("errorMessage" in d) {
-            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.status !== null) {
-            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
-        }
-        if (this.errorMessage !== null) {
-            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(DeleteMessageStreamResponse, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        status: {
-            'type': ResponseStatusCode,
-            'subtype': null
-        },
-        errorMessage: {
-            'type': String,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(DeleteMessageStreamResponse, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(DeleteMessageStreamResponse, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'status': {
-            'required': true,
-        },
-        'errorMessage': {
-            'required': false,
-        },
-    }
-});
-
-/**
- * (Internal Only) Request object for describing a message stream
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class DescribeMessageStreamRequest {
-    #__requestId = null;
-    #__name = null;
-
-    /**
-     * @param requestId {String} 
-     * @param name {String} 
-     */
-    constructor(
-        requestId = null,
-        name = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (name !== null && !(typeof name === "string")) {
-            throw new Error("name must be String");
-        }
-
-        this.#__requestId = requestId;
-        this.#__name = name;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get name() {
-        return this.#__name;
-    }
-    /**
-     * @param value {String} 
-     */
-    set name(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("name must be String");
-        }
-
-        this.#__name = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest}
-     */
-    withName(value) {
-        this.name = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new DescribeMessageStreamRequest();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("name" in d) {
-            ret.name = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["name"]) : d["name"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.name !== null) {
-            d["name"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.name), "asMap") ? this.name.asMap() : this.name;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(DescribeMessageStreamRequest, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        name: {
-            'type': String,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(DescribeMessageStreamRequest, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(DescribeMessageStreamRequest, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'name': {
-            'required': true,
-            'minLength': 1,
-            'maxLength': 255,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-    }
-});
-
-/**
- * (Internal Only) Response object for describing a message stream
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class DescribeMessageStreamResponse {
-    #__requestId = null;
-    #__status = null;
-    #__errorMessage = null;
-    #__messageStreamInfo = null;
-
-    /**
-     * @param requestId {String} 
-     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @param errorMessage {String} 
-     * @param messageStreamInfo {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo} 
-     */
-    constructor(
-        requestId = null,
-        status = null,
-        errorMessage = null,
-        messageStreamInfo = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (status !== null && !(status instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        if (errorMessage !== null && !(typeof errorMessage === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        if (messageStreamInfo !== null && !(messageStreamInfo instanceof MessageStreamInfo)) {
-            throw new Error("messageStreamInfo must be MessageStreamInfo");
-        }
-
-        this.#__requestId = requestId;
-        this.#__status = status;
-        this.#__errorMessage = errorMessage;
-        this.#__messageStreamInfo = messageStreamInfo;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
-     
-     */
-    get status() {
-        return this.#__status;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     */
-    set status(value) {
-        if (value !== null && !(value instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        this.#__status = value;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
-     */
-    withStatus(value) {
-        this.status = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get errorMessage() {
-        return this.#__errorMessage;
-    }
-    /**
-     * @param value {String} 
-     */
-    set errorMessage(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        this.#__errorMessage = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
-     */
-    withErrorMessage(value) {
-        this.errorMessage = value;
-        return this;
-    }
-
-    /**
-     * @returns {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo}
-     
-     */
-    get messageStreamInfo() {
-        return this.#__messageStreamInfo;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo} 
-     */
-    set messageStreamInfo(value) {
-        if (value !== null && !(value instanceof MessageStreamInfo)) {
-            throw new Error("messageStreamInfo must be MessageStreamInfo");
-        }
-
-        this.#__messageStreamInfo = value;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.MessageStreamInfo} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse}
-     */
-    withMessageStreamInfo(value) {
-        this.messageStreamInfo = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new DescribeMessageStreamResponse();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("status" in d) {
-            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
-        }
-        if ("errorMessage" in d) {
-            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
-        }
-        if ("messageStreamInfo" in d) {
-            ret.messageStreamInfo = Object.prototype.hasOwnProperty.call(MessageStreamInfo, "fromMap") ? MessageStreamInfo.fromMap(d["messageStreamInfo"]) : d["messageStreamInfo"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.status !== null) {
-            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
-        }
-        if (this.errorMessage !== null) {
-            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
-        }
-        if (this.messageStreamInfo !== null) {
-            d["messageStreamInfo"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.messageStreamInfo), "asMap") ? this.messageStreamInfo.asMap() : this.messageStreamInfo;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(DescribeMessageStreamResponse, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        status: {
-            'type': ResponseStatusCode,
-            'subtype': null
-        },
-        errorMessage: {
-            'type': String,
-            'subtype': null
-        },
-        messageStreamInfo: {
-            'type': MessageStreamInfo,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(DescribeMessageStreamResponse, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(DescribeMessageStreamResponse, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'status': {
-            'required': true,
-        },
-        'errorMessage': {
-            'required': false,
-        },
-        'messageStreamInfo': {
-            'required': false,
-        },
-    }
-});
-
-/**
- * (Intenral Only) Request object for appending to a message stream
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class AppendMessageRequest {
-    #__requestId = null;
-    #__name = null;
-    #__payload = null;
-
-    /**
-     * @param requestId {String} 
-     * @param name {String} 
-     * @param payload {Buffer} 
-     */
-    constructor(
-        requestId = null,
-        name = null,
-        payload = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (name !== null && !(typeof name === "string")) {
-            throw new Error("name must be String");
-        }
-
-        if (payload !== null && !(payload instanceof Buffer)) {
-            throw new Error("payload must be Buffer");
-        }
-
-        this.#__requestId = requestId;
-        this.#__name = name;
-        this.#__payload = payload;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageRequest}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get name() {
-        return this.#__name;
-    }
-    /**
-     * @param value {String} 
-     */
-    set name(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("name must be String");
-        }
-
-        this.#__name = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageRequest}
-     */
-    withName(value) {
-        this.name = value;
-        return this;
-    }
-
-    /**
-     * @returns {Buffer}
-     
-     */
-    get payload() {
-        return this.#__payload;
-    }
-    /**
-     * @param value {Buffer} 
-     */
-    set payload(value) {
-        if (value !== null && !(value instanceof Buffer)) {
-            throw new Error("payload must be Buffer");
-        }
-
-        this.#__payload = value;
-    }
-    /**
-     * @param value {Buffer} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageRequest}
-     */
-    withPayload(value) {
-        this.payload = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new AppendMessageRequest();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("name" in d) {
-            ret.name = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["name"]) : d["name"];
-        }
-        if ("payload" in d) {
-            ret.payload = Object.prototype.hasOwnProperty.call(Buffer, "fromMap") ? Buffer.fromMap(d["payload"]) : d["payload"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.name !== null) {
-            d["name"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.name), "asMap") ? this.name.asMap() : this.name;
-        }
-        if (this.payload !== null) {
-            d["payload"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.payload), "asMap") ? this.payload.asMap() : this.payload;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(AppendMessageRequest, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        name: {
-            'type': String,
-            'subtype': null
-        },
-        payload: {
-            'type': Buffer,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(AppendMessageRequest, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(AppendMessageRequest, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'name': {
-            'required': true,
-            'minLength': 1,
-            'maxLength': 255,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'payload': {
-            'required': true,
-            'minLength': 1,
-        },
-    }
-});
-
-/**
- * Internal Only
- *
- * @class
- * @memberOf aws-greengrass-core-sdk.StreamManager
- */
-class AppendMessageResponse {
-    #__requestId = null;
-    #__status = null;
-    #__errorMessage = null;
-    #__sequenceNumber = null;
-
-    /**
-     * @param requestId {String} 
-     * @param status {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @param errorMessage {String} 
-     * @param sequenceNumber {Number} 
-     */
-    constructor(
-        requestId = null,
-        status = null,
-        errorMessage = null,
-        sequenceNumber = null,
-    ) {
-        if (requestId !== null && !(typeof requestId === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        if (status !== null && !(status instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        if (errorMessage !== null && !(typeof errorMessage === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        if (sequenceNumber !== null && !(typeof sequenceNumber === "number")) {
-            throw new Error("sequenceNumber must be Number");
-        }
-
-        this.#__requestId = requestId;
-        this.#__status = status;
-        this.#__errorMessage = errorMessage;
-        this.#__sequenceNumber = sequenceNumber;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get requestId() {
-        return this.#__requestId;
-    }
-    /**
-     * @param value {String} 
-     */
-    set requestId(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("requestId must be String");
-        }
-
-        this.#__requestId = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
-     */
-    withRequestId(value) {
-        this.requestId = value;
-        return this;
-    }
-
-    /**
-     * @returns {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode}
-     
-     */
-    get status() {
-        return this.#__status;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     */
-    set status(value) {
-        if (value !== null && !(value instanceof ResponseStatusCode)) {
-            throw new Error("status must be ResponseStatusCode");
-        }
-
-        this.#__status = value;
-    }
-    /**
-     * @param value {aws-greengrass-core-sdk.StreamManager.ResponseStatusCode} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
-     */
-    withStatus(value) {
-        this.status = value;
-        return this;
-    }
-
-    /**
-     * @returns {String}
-     
-     */
-    get errorMessage() {
-        return this.#__errorMessage;
-    }
-    /**
-     * @param value {String} 
-     */
-    set errorMessage(value) {
-        if (value !== null && !(typeof value === "string")) {
-            throw new Error("errorMessage must be String");
-        }
-
-        this.#__errorMessage = value;
-    }
-    /**
-     * @param value {String} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
-     */
-    withErrorMessage(value) {
-        this.errorMessage = value;
-        return this;
-    }
-
-    /**
-     * @returns {Number}
-     
-     */
-    get sequenceNumber() {
-        return this.#__sequenceNumber;
-    }
-    /**
-     * @param value {Number} 
-     */
-    set sequenceNumber(value) {
-        if (value !== null && !(typeof value === "number")) {
-            throw new Error("sequenceNumber must be Number");
-        }
-
-        this.#__sequenceNumber = value;
-    }
-    /**
-     * @param value {Number} 
-     * @returns {aws-greengrass-core-sdk.StreamManager.AppendMessageResponse}
-     */
-    withSequenceNumber(value) {
-        this.sequenceNumber = value;
-        return this;
-    }
-
-    static fromMap(d) {
-        const ret = new AppendMessageResponse();
-        if ("requestId" in d) {
-            ret.requestId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["requestId"]) : d["requestId"];
-        }
-        if ("status" in d) {
-            ret.status = Object.prototype.hasOwnProperty.call(ResponseStatusCode, "fromMap") ? ResponseStatusCode.fromMap(d["status"]) : d["status"];
-        }
-        if ("errorMessage" in d) {
-            ret.errorMessage = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["errorMessage"]) : d["errorMessage"];
-        }
-        if ("sequenceNumber" in d) {
-            ret.sequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["sequenceNumber"]) : d["sequenceNumber"];
-        }
-        return ret;
-    }
-
-    asMap() {
-        const d = {};
-        if (this.requestId !== null) {
-            d["requestId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.requestId), "asMap") ? this.requestId.asMap() : this.requestId;
-        }
-        if (this.status !== null) {
-            d["status"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.status), "asMap") ? this.status.asMap() : this.status;
-        }
-        if (this.errorMessage !== null) {
-            d["errorMessage"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.errorMessage), "asMap") ? this.errorMessage.asMap() : this.errorMessage;
-        }
-        if (this.sequenceNumber !== null) {
-            d["sequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sequenceNumber), "asMap") ? this.sequenceNumber.asMap() : this.sequenceNumber;
-        }
-        return d;
-    }
-};
-
-Object.defineProperty(AppendMessageResponse, "typesMap", {
-    value: {
-        requestId: {
-            'type': String,
-            'subtype': null
-        },
-        status: {
-            'type': ResponseStatusCode,
-            'subtype': null
-        },
-        errorMessage: {
-            'type': String,
-            'subtype': null
-        },
-        sequenceNumber: {
-            'type': Number,
-            'subtype': null
-        },
-    }
-});
-Object.defineProperty(AppendMessageResponse, "formatsMap", {
-    value: {}
-});
-Object.defineProperty(AppendMessageResponse, "validationsMap", {
-    value: {
-        'requestId': {
-            'required': true,
-            'minLength': 1,
-            'pattern': /^[\w ,.\-_]*$/,
-        },
-        'status': {
-            'required': true,
-        },
-        'errorMessage': {
-            'required': false,
-        },
-        'sequenceNumber': {
-            'required': false,
-        },
-    }
-});
-
-/**
  * (Internal Only) Request object for reading from a message stream. readMessagesOptions is optional.
  *
  * @class
@@ -5569,7 +8487,236 @@ Object.defineProperty(ReadMessagesRequest, "validationsMap", {
 });
 
 /**
- * Internal Only
+ * Message object containing metadata and the user's payload.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class Message {
+    #__streamName = null;
+    #__sequenceNumber = null;
+    #__ingestTime = null;
+    #__payload = null;
+
+    /**
+     * @param streamName {String} The name of the stream which this message is in.
+     * @param sequenceNumber {Number} The sequence number of this message within the stream.
+     * @param ingestTime {Number} The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
+     * @param payload {Buffer} The binary message data.
+     */
+    constructor(
+        streamName = null,
+        sequenceNumber = null,
+        ingestTime = null,
+        payload = null,
+    ) {
+        if (streamName !== null && !(typeof streamName === "string")) {
+            throw new Error("streamName must be String");
+        }
+
+        if (sequenceNumber !== null && !(typeof sequenceNumber === "number")) {
+            throw new Error("sequenceNumber must be Number");
+        }
+
+        if (ingestTime !== null && !(typeof ingestTime === "number")) {
+            throw new Error("ingestTime must be Number");
+        }
+
+        if (payload !== null && !(payload instanceof Buffer)) {
+            throw new Error("payload must be Buffer");
+        }
+
+        this.#__streamName = streamName;
+        this.#__sequenceNumber = sequenceNumber;
+        this.#__ingestTime = ingestTime;
+        this.#__payload = payload;
+    }
+
+    /**
+     * The name of the stream which this message is in.
+     * @returns {String}
+     
+     */
+    get streamName() {
+        return this.#__streamName;
+    }
+    /**
+     * @param value {String} The name of the stream which this message is in.
+     */
+    set streamName(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("streamName must be String");
+        }
+
+        this.#__streamName = value;
+    }
+    /**
+     * @param value {String} The name of the stream which this message is in.
+     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     */
+    withStreamName(value) {
+        this.streamName = value;
+        return this;
+    }
+
+    /**
+     * The sequence number of this message within the stream.
+     * @returns {Number}
+     
+     */
+    get sequenceNumber() {
+        return this.#__sequenceNumber;
+    }
+    /**
+     * @param value {Number} The sequence number of this message within the stream.
+     */
+    set sequenceNumber(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("sequenceNumber must be Number");
+        }
+
+        this.#__sequenceNumber = value;
+    }
+    /**
+     * @param value {Number} The sequence number of this message within the stream.
+     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     */
+    withSequenceNumber(value) {
+        this.sequenceNumber = value;
+        return this;
+    }
+
+    /**
+     * The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
+     * @returns {Number}
+     
+     */
+    get ingestTime() {
+        return this.#__ingestTime;
+    }
+    /**
+     * @param value {Number} The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
+     */
+    set ingestTime(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("ingestTime must be Number");
+        }
+
+        this.#__ingestTime = value;
+    }
+    /**
+     * @param value {Number} The time that the message was ingested to Stream Manager. Data is Unix epoch time in milliseconds.
+     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     */
+    withIngestTime(value) {
+        this.ingestTime = value;
+        return this;
+    }
+
+    /**
+     * The binary message data.
+     * @returns {Buffer}
+     
+     */
+    get payload() {
+        return this.#__payload;
+    }
+    /**
+     * @param value {Buffer} The binary message data.
+     */
+    set payload(value) {
+        if (value !== null && !(value instanceof Buffer)) {
+            throw new Error("payload must be Buffer");
+        }
+
+        this.#__payload = value;
+    }
+    /**
+     * @param value {Buffer} The binary message data.
+     * @returns {aws-greengrass-core-sdk.StreamManager.Message}
+     */
+    withPayload(value) {
+        this.payload = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new Message();
+        if ("streamName" in d) {
+            ret.streamName = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["streamName"]) : d["streamName"];
+        }
+        if ("sequenceNumber" in d) {
+            ret.sequenceNumber = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["sequenceNumber"]) : d["sequenceNumber"];
+        }
+        if ("ingestTime" in d) {
+            ret.ingestTime = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["ingestTime"]) : d["ingestTime"];
+        }
+        if ("payload" in d) {
+            ret.payload = Object.prototype.hasOwnProperty.call(Buffer, "fromMap") ? Buffer.fromMap(d["payload"]) : d["payload"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.streamName !== null) {
+            d["streamName"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.streamName), "asMap") ? this.streamName.asMap() : this.streamName;
+        }
+        if (this.sequenceNumber !== null) {
+            d["sequenceNumber"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.sequenceNumber), "asMap") ? this.sequenceNumber.asMap() : this.sequenceNumber;
+        }
+        if (this.ingestTime !== null) {
+            d["ingestTime"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.ingestTime), "asMap") ? this.ingestTime.asMap() : this.ingestTime;
+        }
+        if (this.payload !== null) {
+            d["payload"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.payload), "asMap") ? this.payload.asMap() : this.payload;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(Message, "typesMap", {
+    value: {
+        streamName: {
+            'type': String,
+            'subtype': null
+        },
+        sequenceNumber: {
+            'type': Number,
+            'subtype': null
+        },
+        ingestTime: {
+            'type': Number,
+            'subtype': null
+        },
+        payload: {
+            'type': Buffer,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(Message, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(Message, "validationsMap", {
+    value: {
+        'streamName': {
+            'required': true,
+        },
+        'sequenceNumber': {
+            'required': false,
+        },
+        'ingestTime': {
+            'required': false,
+        },
+        'payload': {
+            'required': true,
+        },
+    }
+});
+
+/**
+ * Internal Only.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -5894,7 +9041,7 @@ Object.defineProperty(ListStreamsRequest, "validationsMap", {
 });
 
 /**
- * Internal Only
+ * Internal Only.
  *
  * @class
  * @memberOf aws-greengrass-core-sdk.StreamManager
@@ -6133,62 +9280,1015 @@ Object.defineProperty(ListStreamsResponse, "validationsMap", {
 });
 
 /**
+ * Contains a timestamp with optional nanosecond granularity.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class TimeInNanos {
+    #__timeInSeconds = null;
+    #__offsetInNanos = null;
+
+    /**
+     * @param timeInSeconds {Number} The timestamp date, in seconds, in the Unix epoch format. Fractional nanosecond data is provided by offsetInNanos.
+     * @param offsetInNanos {Number} The nanosecond offset from timeInSeconds.
+     */
+    constructor(
+        timeInSeconds = null,
+        offsetInNanos = null,
+    ) {
+        if (timeInSeconds !== null && !(typeof timeInSeconds === "number")) {
+            throw new Error("timeInSeconds must be Number");
+        }
+
+        if (offsetInNanos !== null && !(typeof offsetInNanos === "number")) {
+            throw new Error("offsetInNanos must be Number");
+        }
+
+        this.#__timeInSeconds = timeInSeconds;
+        this.#__offsetInNanos = offsetInNanos;
+    }
+
+    /**
+     * The timestamp date, in seconds, in the Unix epoch format. Fractional nanosecond data is provided by offsetInNanos.
+     * @returns {Number}
+     
+     */
+    get timeInSeconds() {
+        return this.#__timeInSeconds;
+    }
+    /**
+     * @param value {Number} The timestamp date, in seconds, in the Unix epoch format. Fractional nanosecond data is provided by offsetInNanos.
+     */
+    set timeInSeconds(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("timeInSeconds must be Number");
+        }
+
+        this.#__timeInSeconds = value;
+    }
+    /**
+     * @param value {Number} The timestamp date, in seconds, in the Unix epoch format. Fractional nanosecond data is provided by offsetInNanos.
+     * @returns {aws-greengrass-core-sdk.StreamManager.TimeInNanos}
+     */
+    withTimeInSeconds(value) {
+        this.timeInSeconds = value;
+        return this;
+    }
+
+    /**
+     * The nanosecond offset from timeInSeconds.
+     * @returns {Number}
+     
+     */
+    get offsetInNanos() {
+        return this.#__offsetInNanos;
+    }
+    /**
+     * @param value {Number} The nanosecond offset from timeInSeconds.
+     */
+    set offsetInNanos(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("offsetInNanos must be Number");
+        }
+
+        this.#__offsetInNanos = value;
+    }
+    /**
+     * @param value {Number} The nanosecond offset from timeInSeconds.
+     * @returns {aws-greengrass-core-sdk.StreamManager.TimeInNanos}
+     */
+    withOffsetInNanos(value) {
+        this.offsetInNanos = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new TimeInNanos();
+        if ("timeInSeconds" in d) {
+            ret.timeInSeconds = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["timeInSeconds"]) : d["timeInSeconds"];
+        }
+        if ("offsetInNanos" in d) {
+            ret.offsetInNanos = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["offsetInNanos"]) : d["offsetInNanos"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.timeInSeconds !== null) {
+            d["timeInSeconds"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.timeInSeconds), "asMap") ? this.timeInSeconds.asMap() : this.timeInSeconds;
+        }
+        if (this.offsetInNanos !== null) {
+            d["offsetInNanos"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.offsetInNanos), "asMap") ? this.offsetInNanos.asMap() : this.offsetInNanos;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(TimeInNanos, "typesMap", {
+    value: {
+        timeInSeconds: {
+            'type': Number,
+            'subtype': null
+        },
+        offsetInNanos: {
+            'type': Number,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(TimeInNanos, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(TimeInNanos, "validationsMap", {
+    value: {
+        'timeInSeconds': {
+            'required': true,
+            'maximum': 31556889864403199,
+            'minimum': 1,
+        },
+        'offsetInNanos': {
+            'required': false,
+            'maximum': 999999999,
+            'minimum': 0,
+        },
+    }
+});
+
+/**
+ * Contains an asset property value (of a single type only).
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class Variant {
+    #__stringValue = null;
+    #__integerValue = null;
+    #__doubleValue = null;
+    #__booleanValue = null;
+
+    /**
+     * @param stringValue {String} Asset property data of type string (sequence of characters).
+     * @param integerValue {Number} Asset property data of type integer (whole number).
+     * @param doubleValue {Number} Asset property data of type double (floating point number).
+     * @param booleanValue {Boolean} Asset property data of type Boolean (true or false).
+     */
+    constructor(
+        stringValue = null,
+        integerValue = null,
+        doubleValue = null,
+        booleanValue = null,
+    ) {
+        if (stringValue !== null && !(typeof stringValue === "string")) {
+            throw new Error("stringValue must be String");
+        }
+
+        if (integerValue !== null && !(typeof integerValue === "number")) {
+            throw new Error("integerValue must be Number");
+        }
+
+        if (doubleValue !== null && !(typeof doubleValue === "number")) {
+            throw new Error("doubleValue must be Number");
+        }
+
+        if (booleanValue !== null && !(typeof booleanValue === "boolean")) {
+            throw new Error("booleanValue must be Boolean");
+        }
+
+        this.#__stringValue = stringValue;
+        this.#__integerValue = integerValue;
+        this.#__doubleValue = doubleValue;
+        this.#__booleanValue = booleanValue;
+    }
+
+    /**
+     * Asset property data of type string (sequence of characters).
+     * @returns {String}
+     
+     */
+    get stringValue() {
+        return this.#__stringValue;
+    }
+    /**
+     * @param value {String} Asset property data of type string (sequence of characters).
+     */
+    set stringValue(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("stringValue must be String");
+        }
+
+        this.#__stringValue = value;
+    }
+    /**
+     * @param value {String} Asset property data of type string (sequence of characters).
+     * @returns {aws-greengrass-core-sdk.StreamManager.Variant}
+     */
+    withStringValue(value) {
+        this.stringValue = value;
+        return this;
+    }
+
+    /**
+     * Asset property data of type integer (whole number).
+     * @returns {Number}
+     
+     */
+    get integerValue() {
+        return this.#__integerValue;
+    }
+    /**
+     * @param value {Number} Asset property data of type integer (whole number).
+     */
+    set integerValue(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("integerValue must be Number");
+        }
+
+        this.#__integerValue = value;
+    }
+    /**
+     * @param value {Number} Asset property data of type integer (whole number).
+     * @returns {aws-greengrass-core-sdk.StreamManager.Variant}
+     */
+    withIntegerValue(value) {
+        this.integerValue = value;
+        return this;
+    }
+
+    /**
+     * Asset property data of type double (floating point number).
+     * @returns {Number}
+     
+     */
+    get doubleValue() {
+        return this.#__doubleValue;
+    }
+    /**
+     * @param value {Number} Asset property data of type double (floating point number).
+     */
+    set doubleValue(value) {
+        if (value !== null && !(typeof value === "number")) {
+            throw new Error("doubleValue must be Number");
+        }
+
+        this.#__doubleValue = value;
+    }
+    /**
+     * @param value {Number} Asset property data of type double (floating point number).
+     * @returns {aws-greengrass-core-sdk.StreamManager.Variant}
+     */
+    withDoubleValue(value) {
+        this.doubleValue = value;
+        return this;
+    }
+
+    /**
+     * Asset property data of type Boolean (true or false).
+     * @returns {Boolean}
+     
+     */
+    get booleanValue() {
+        return this.#__booleanValue;
+    }
+    /**
+     * @param value {Boolean} Asset property data of type Boolean (true or false).
+     */
+    set booleanValue(value) {
+        if (value !== null && !(typeof value === "boolean")) {
+            throw new Error("booleanValue must be Boolean");
+        }
+
+        this.#__booleanValue = value;
+    }
+    /**
+     * @param value {Boolean} Asset property data of type Boolean (true or false).
+     * @returns {aws-greengrass-core-sdk.StreamManager.Variant}
+     */
+    withBooleanValue(value) {
+        this.booleanValue = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new Variant();
+        if ("stringValue" in d) {
+            ret.stringValue = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["stringValue"]) : d["stringValue"];
+        }
+        if ("integerValue" in d) {
+            ret.integerValue = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["integerValue"]) : d["integerValue"];
+        }
+        if ("doubleValue" in d) {
+            ret.doubleValue = Object.prototype.hasOwnProperty.call(Number, "fromMap") ? Number.fromMap(d["doubleValue"]) : d["doubleValue"];
+        }
+        if ("booleanValue" in d) {
+            ret.booleanValue = Object.prototype.hasOwnProperty.call(Boolean, "fromMap") ? Boolean.fromMap(d["booleanValue"]) : d["booleanValue"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.stringValue !== null) {
+            d["stringValue"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.stringValue), "asMap") ? this.stringValue.asMap() : this.stringValue;
+        }
+        if (this.integerValue !== null) {
+            d["integerValue"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.integerValue), "asMap") ? this.integerValue.asMap() : this.integerValue;
+        }
+        if (this.doubleValue !== null) {
+            d["doubleValue"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.doubleValue), "asMap") ? this.doubleValue.asMap() : this.doubleValue;
+        }
+        if (this.booleanValue !== null) {
+            d["booleanValue"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.booleanValue), "asMap") ? this.booleanValue.asMap() : this.booleanValue;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(Variant, "typesMap", {
+    value: {
+        stringValue: {
+            'type': String,
+            'subtype': null
+        },
+        integerValue: {
+            'type': Number,
+            'subtype': null
+        },
+        doubleValue: {
+            'type': Number,
+            'subtype': null
+        },
+        booleanValue: {
+            'type': Boolean,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(Variant, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(Variant, "validationsMap", {
+    value: {
+        'stringValue': {
+            'required': false,
+            'minLength': 1,
+            'maxLength': 1024,
+            'pattern': /[^\u0000-\u001F\u007F]+/,
+        },
+        'integerValue': {
+            'required': false,
+            'maximum': 2147483647,
+            'minimum': 0,
+        },
+        'doubleValue': {
+            'required': false,
+        },
+        'booleanValue': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * 
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class Quality {
+
+    #value = null;
+    constructor(value = null) {
+        if (!Object.values(Quality.options).includes(value)) {
+            throw new Error("Value must be one of the enumerated options");
+        }
+        this.#value = value;
+    }
+
+    static fromMap(d) {
+        return Quality[Quality.optionsFlipped[d]];
+    }
+
+    asMap() {
+        return this.#value;
+    }
+};
+Object.defineProperty(Quality, "options", {
+    value: {
+        GOOD: "GOOD",
+        BAD: "BAD",
+        UNCERTAIN: "UNCERTAIN",
+    }
+});
+Object.defineProperty(Quality, "optionsFlipped", {
+    value: {
+        "GOOD": "GOOD",
+        "BAD": "BAD",
+        "UNCERTAIN": "UNCERTAIN",
+    }
+});
+
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Quality} GOOD
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Quality#
+ * @readonly
+ */
+Object.defineProperty(Quality, "GOOD", {
+    value: new Quality("GOOD")
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Quality} BAD
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Quality#
+ * @readonly
+ */
+Object.defineProperty(Quality, "BAD", {
+    value: new Quality("BAD")
+});
+/**
+ * @member {aws-greengrass-core-sdk.StreamManager.Quality} UNCERTAIN
+ * @memberOf aws-greengrass-core-sdk.StreamManager.Quality#
+ * @readonly
+ */
+Object.defineProperty(Quality, "UNCERTAIN", {
+    value: new Quality("UNCERTAIN")
+});
+
+/**
+ * Contains asset property value information.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class AssetPropertyValue {
+    #__value = null;
+    #__timestamp = null;
+    #__quality = null;
+
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Variant} The value of the asset property.
+     * @param timestamp {aws-greengrass-core-sdk.StreamManager.TimeInNanos} The timestamp of the asset property value.
+     * @param quality {aws-greengrass-core-sdk.StreamManager.Quality} The quality of the asset property value.
+     */
+    constructor(
+        value = null,
+        timestamp = null,
+        quality = null,
+    ) {
+        if (value !== null && !(value instanceof Variant)) {
+            throw new Error("value must be Variant");
+        }
+
+        if (timestamp !== null && !(timestamp instanceof TimeInNanos)) {
+            throw new Error("timestamp must be TimeInNanos");
+        }
+
+        if (quality !== null && !(quality instanceof Quality)) {
+            throw new Error("quality must be Quality");
+        }
+
+        this.#__value = value;
+        this.#__timestamp = timestamp;
+        this.#__quality = quality;
+    }
+
+    /**
+     * The value of the asset property.
+     * @returns {aws-greengrass-core-sdk.StreamManager.Variant}
+     
+     */
+    get value() {
+        return this.#__value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Variant} The value of the asset property.
+     */
+    set value(value) {
+        if (value !== null && !(value instanceof Variant)) {
+            throw new Error("value must be Variant");
+        }
+
+        this.#__value = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Variant} The value of the asset property.
+     * @returns {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue}
+     */
+    withValue(value) {
+        this.value = value;
+        return this;
+    }
+
+    /**
+     * The timestamp of the asset property value.
+     * @returns {aws-greengrass-core-sdk.StreamManager.TimeInNanos}
+     
+     */
+    get timestamp() {
+        return this.#__timestamp;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.TimeInNanos} The timestamp of the asset property value.
+     */
+    set timestamp(value) {
+        if (value !== null && !(value instanceof TimeInNanos)) {
+            throw new Error("timestamp must be TimeInNanos");
+        }
+
+        this.#__timestamp = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.TimeInNanos} The timestamp of the asset property value.
+     * @returns {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue}
+     */
+    withTimestamp(value) {
+        this.timestamp = value;
+        return this;
+    }
+
+    /**
+     * The quality of the asset property value.
+     * @returns {aws-greengrass-core-sdk.StreamManager.Quality}
+     
+     */
+    get quality() {
+        return this.#__quality;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Quality} The quality of the asset property value.
+     */
+    set quality(value) {
+        if (value !== null && !(value instanceof Quality)) {
+            throw new Error("quality must be Quality");
+        }
+
+        this.#__quality = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.Quality} The quality of the asset property value.
+     * @returns {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue}
+     */
+    withQuality(value) {
+        this.quality = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new AssetPropertyValue();
+        if ("value" in d) {
+            ret.value = Object.prototype.hasOwnProperty.call(Variant, "fromMap") ? Variant.fromMap(d["value"]) : d["value"];
+        }
+        if ("timestamp" in d) {
+            ret.timestamp = Object.prototype.hasOwnProperty.call(TimeInNanos, "fromMap") ? TimeInNanos.fromMap(d["timestamp"]) : d["timestamp"];
+        }
+        if ("quality" in d) {
+            ret.quality = Object.prototype.hasOwnProperty.call(Quality, "fromMap") ? Quality.fromMap(d["quality"]) : d["quality"];
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.value !== null) {
+            d["value"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.value), "asMap") ? this.value.asMap() : this.value;
+        }
+        if (this.timestamp !== null) {
+            d["timestamp"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.timestamp), "asMap") ? this.timestamp.asMap() : this.timestamp;
+        }
+        if (this.quality !== null) {
+            d["quality"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.quality), "asMap") ? this.quality.asMap() : this.quality;
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(AssetPropertyValue, "typesMap", {
+    value: {
+        value: {
+            'type': Variant,
+            'subtype': null
+        },
+        timestamp: {
+            'type': TimeInNanos,
+            'subtype': null
+        },
+        quality: {
+            'type': Quality,
+            'subtype': null
+        },
+    }
+});
+Object.defineProperty(AssetPropertyValue, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(AssetPropertyValue, "validationsMap", {
+    value: {
+        'value': {
+            'required': true,
+        },
+        'timestamp': {
+            'required': true,
+        },
+        'quality': {
+            'required': false,
+        },
+    }
+});
+
+/**
+ * Contains a list of value updates for a IoTSiteWise asset property in the list of asset entries consumed by the BatchPutAssetPropertyValue API. See https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/API_BatchPutAssetPropertyValue.html.
+ *
+ * @class
+ * @memberOf aws-greengrass-core-sdk.StreamManager
+ */
+class PutAssetPropertyValueEntry {
+    #__entryId = null;
+    #__assetId = null;
+    #__propertyId = null;
+    #__propertyAlias = null;
+    #__propertyValues = null;
+
+    /**
+     * @param entryId {String} The user specified ID for the entry. You can use this ID to identify which entries failed.
+     * @param assetId {String} The ID of the asset to update.
+     * @param propertyId {String} The ID of the asset property for this entry.
+     * @param propertyAlias {String} The property alias that identifies the property, such as an OPC-UA server data stream path (for example, /company/windfarm/3/turbine/7/temperature). For more information, see https://docs.aws.amazon.com/iot-sitewise/latest/userguide/connect-data-streams.html.
+     * @param propertyValues {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue[]} The list of property values to upload. You can specify up to 10 values.
+     */
+    constructor(
+        entryId = null,
+        assetId = null,
+        propertyId = null,
+        propertyAlias = null,
+        propertyValues = null,
+    ) {
+        if (entryId !== null && !(typeof entryId === "string")) {
+            throw new Error("entryId must be String");
+        }
+
+        if (assetId !== null && !(typeof assetId === "string")) {
+            throw new Error("assetId must be String");
+        }
+
+        if (propertyId !== null && !(typeof propertyId === "string")) {
+            throw new Error("propertyId must be String");
+        }
+
+        if (propertyAlias !== null && !(typeof propertyAlias === "string")) {
+            throw new Error("propertyAlias must be String");
+        }
+
+        if (propertyValues !== null && !(propertyValues instanceof Array)) {
+            throw new Error("propertyValues must be Array");
+        }
+        if (propertyValues !== null && !propertyValues.every((v) => v instanceof AssetPropertyValue)) {
+            throw new Error("propertyValues array values must be AssetPropertyValue");
+        }
+
+        this.#__entryId = entryId;
+        this.#__assetId = assetId;
+        this.#__propertyId = propertyId;
+        this.#__propertyAlias = propertyAlias;
+        this.#__propertyValues = propertyValues;
+    }
+
+    /**
+     * The user specified ID for the entry. You can use this ID to identify which entries failed.
+     * @returns {String}
+     
+     */
+    get entryId() {
+        return this.#__entryId;
+    }
+    /**
+     * @param value {String} The user specified ID for the entry. You can use this ID to identify which entries failed.
+     */
+    set entryId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("entryId must be String");
+        }
+
+        this.#__entryId = value;
+    }
+    /**
+     * @param value {String} The user specified ID for the entry. You can use this ID to identify which entries failed.
+     * @returns {aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry}
+     */
+    withEntryId(value) {
+        this.entryId = value;
+        return this;
+    }
+
+    /**
+     * The ID of the asset to update.
+     * @returns {String}
+     
+     */
+    get assetId() {
+        return this.#__assetId;
+    }
+    /**
+     * @param value {String} The ID of the asset to update.
+     */
+    set assetId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("assetId must be String");
+        }
+
+        this.#__assetId = value;
+    }
+    /**
+     * @param value {String} The ID of the asset to update.
+     * @returns {aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry}
+     */
+    withAssetId(value) {
+        this.assetId = value;
+        return this;
+    }
+
+    /**
+     * The ID of the asset property for this entry.
+     * @returns {String}
+     
+     */
+    get propertyId() {
+        return this.#__propertyId;
+    }
+    /**
+     * @param value {String} The ID of the asset property for this entry.
+     */
+    set propertyId(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("propertyId must be String");
+        }
+
+        this.#__propertyId = value;
+    }
+    /**
+     * @param value {String} The ID of the asset property for this entry.
+     * @returns {aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry}
+     */
+    withPropertyId(value) {
+        this.propertyId = value;
+        return this;
+    }
+
+    /**
+     * The property alias that identifies the property, such as an OPC-UA server data stream path (for example, /company/windfarm/3/turbine/7/temperature). For more information, see https://docs.aws.amazon.com/iot-sitewise/latest/userguide/connect-data-streams.html.
+     * @returns {String}
+     
+     */
+    get propertyAlias() {
+        return this.#__propertyAlias;
+    }
+    /**
+     * @param value {String} The property alias that identifies the property, such as an OPC-UA server data stream path (for example, /company/windfarm/3/turbine/7/temperature). For more information, see https://docs.aws.amazon.com/iot-sitewise/latest/userguide/connect-data-streams.html.
+     */
+    set propertyAlias(value) {
+        if (value !== null && !(typeof value === "string")) {
+            throw new Error("propertyAlias must be String");
+        }
+
+        this.#__propertyAlias = value;
+    }
+    /**
+     * @param value {String} The property alias that identifies the property, such as an OPC-UA server data stream path (for example, /company/windfarm/3/turbine/7/temperature). For more information, see https://docs.aws.amazon.com/iot-sitewise/latest/userguide/connect-data-streams.html.
+     * @returns {aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry}
+     */
+    withPropertyAlias(value) {
+        this.propertyAlias = value;
+        return this;
+    }
+
+    /**
+     * The list of property values to upload. You can specify up to 10 values.
+     * @returns {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue[]}
+     
+     */
+    get propertyValues() {
+        return this.#__propertyValues;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue[]} The list of property values to upload. You can specify up to 10 values.
+     */
+    set propertyValues(value) {
+        if (value !== null && !(value instanceof Array)) {
+            throw new Error("propertyValues must be Array");
+        }
+        if (value !== null && !value.every((v) => v instanceof AssetPropertyValue)) {
+            throw new Error("propertyValues array values must be AssetPropertyValue");
+        }
+
+        this.#__propertyValues = value;
+    }
+    /**
+     * @param value {aws-greengrass-core-sdk.StreamManager.AssetPropertyValue[]} The list of property values to upload. You can specify up to 10 values.
+     * @returns {aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry}
+     */
+    withPropertyValues(value) {
+        this.propertyValues = value;
+        return this;
+    }
+
+    static fromMap(d) {
+        const ret = new PutAssetPropertyValueEntry();
+        if ("entryId" in d) {
+            ret.entryId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["entryId"]) : d["entryId"];
+        }
+        if ("assetId" in d) {
+            ret.assetId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["assetId"]) : d["assetId"];
+        }
+        if ("propertyId" in d) {
+            ret.propertyId = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["propertyId"]) : d["propertyId"];
+        }
+        if ("propertyAlias" in d) {
+            ret.propertyAlias = Object.prototype.hasOwnProperty.call(String, "fromMap") ? String.fromMap(d["propertyAlias"]) : d["propertyAlias"];
+        }
+        if ("propertyValues" in d) {
+            ret.propertyValues = d["propertyValues"].reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(AssetPropertyValue, "fromMap") ? AssetPropertyValue.fromMap(v) : v);
+                return acc;
+            }, []);
+        }
+        return ret;
+    }
+
+    asMap() {
+        const d = {};
+        if (this.entryId !== null) {
+            d["entryId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.entryId), "asMap") ? this.entryId.asMap() : this.entryId;
+        }
+        if (this.assetId !== null) {
+            d["assetId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.assetId), "asMap") ? this.assetId.asMap() : this.assetId;
+        }
+        if (this.propertyId !== null) {
+            d["propertyId"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.propertyId), "asMap") ? this.propertyId.asMap() : this.propertyId;
+        }
+        if (this.propertyAlias !== null) {
+            d["propertyAlias"] = Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(this.propertyAlias), "asMap") ? this.propertyAlias.asMap() : this.propertyAlias;
+        }
+        if (this.propertyValues !== null) {
+            d["propertyValues"] = this.propertyValues.reduce((acc, v) => {
+                acc.push(Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(v), "asMap") ? v.asMap() : v);
+                return acc;
+            }, []);
+        }
+        return d;
+    }
+};
+
+Object.defineProperty(PutAssetPropertyValueEntry, "typesMap", {
+    value: {
+        entryId: {
+            'type': String,
+            'subtype': null
+        },
+        assetId: {
+            'type': String,
+            'subtype': null
+        },
+        propertyId: {
+            'type': String,
+            'subtype': null
+        },
+        propertyAlias: {
+            'type': String,
+            'subtype': null
+        },
+        propertyValues: {
+            'type': Array,
+            'subtype': AssetPropertyValue
+        },
+    }
+});
+Object.defineProperty(PutAssetPropertyValueEntry, "formatsMap", {
+    value: {}
+});
+Object.defineProperty(PutAssetPropertyValueEntry, "validationsMap", {
+    value: {
+        'entryId': {
+            'required': true,
+            'minLength': 1,
+            'maxLength': 64,
+            'pattern': /^[a-zA-Z0-9_-]+$/,
+        },
+        'assetId': {
+            'required': false,
+        },
+        'propertyId': {
+            'required': false,
+        },
+        'propertyAlias': {
+            'required': false,
+            'minLength': 1,
+            'maxLength': 2048,
+            'pattern': /[^\u0000-\u001F\u007F]+/,
+        },
+        'propertyValues': {
+            'required': true,
+            'maxItems': 10,
+            'minItems': 1,
+        },
+    }
+});
+
+/**
  * @type {{
-StrategyOnFull: StrategyOnFull,
-Persistence: Persistence,
+VersionInfo: VersionInfo,
 ConnectRequest: ConnectRequest,
 ResponseStatusCode: ResponseStatusCode,
 ConnectResponse: ConnectResponse,
 Operation: Operation,
 MessageFrame: MessageFrame,
+EventType: EventType,
+Status: Status,
+StatusLevel: StatusLevel,
+S3ExportTaskDefinition: S3ExportTaskDefinition,
+StatusContext: StatusContext,
+StatusMessage: StatusMessage,
+TraceableRequest: TraceableRequest,
+UnknownOperationError: UnknownOperationError,
+Persistence: Persistence,
+ExportFormat: ExportFormat,
 HTTPConfig: HTTPConfig,
 IoTAnalyticsConfig: IoTAnalyticsConfig,
 KinesisConfig: KinesisConfig,
+IoTSiteWiseConfig: IoTSiteWiseConfig,
+StatusConfig: StatusConfig,
+S3ExportTaskExecutorConfig: S3ExportTaskExecutorConfig,
 ExportDefinition: ExportDefinition,
+StrategyOnFull: StrategyOnFull,
 MessageStreamDefinition: MessageStreamDefinition,
-MessageStreamInfo: MessageStreamInfo,
-Message: Message,
-ReadMessagesOptions: ReadMessagesOptions,
 CreateMessageStreamRequest: CreateMessageStreamRequest,
 CreateMessageStreamResponse: CreateMessageStreamResponse,
+UpdateMessageStreamRequest: UpdateMessageStreamRequest,
+UpdateMessageStreamResponse: UpdateMessageStreamResponse,
 DeleteMessageStreamRequest: DeleteMessageStreamRequest,
 DeleteMessageStreamResponse: DeleteMessageStreamResponse,
 DescribeMessageStreamRequest: DescribeMessageStreamRequest,
+MessageStreamInfo: MessageStreamInfo,
 DescribeMessageStreamResponse: DescribeMessageStreamResponse,
 AppendMessageRequest: AppendMessageRequest,
 AppendMessageResponse: AppendMessageResponse,
+ReadMessagesOptions: ReadMessagesOptions,
 ReadMessagesRequest: ReadMessagesRequest,
+Message: Message,
 ReadMessagesResponse: ReadMessagesResponse,
 ListStreamsRequest: ListStreamsRequest,
-ListStreamsResponse: ListStreamsResponse
+ListStreamsResponse: ListStreamsResponse,
+TimeInNanos: TimeInNanos,
+Variant: Variant,
+Quality: Quality,
+AssetPropertyValue: AssetPropertyValue,
+PutAssetPropertyValueEntry: PutAssetPropertyValueEntry
 }}
  */
 module.exports = {
-    StrategyOnFull,
-    Persistence,
+    VersionInfo,
     ConnectRequest,
     ResponseStatusCode,
     ConnectResponse,
     Operation,
     MessageFrame,
+    EventType,
+    Status,
+    StatusLevel,
+    S3ExportTaskDefinition,
+    StatusContext,
+    StatusMessage,
+    TraceableRequest,
+    UnknownOperationError,
+    Persistence,
+    ExportFormat,
     HTTPConfig,
     IoTAnalyticsConfig,
     KinesisConfig,
+    IoTSiteWiseConfig,
+    StatusConfig,
+    S3ExportTaskExecutorConfig,
     ExportDefinition,
+    StrategyOnFull,
     MessageStreamDefinition,
-    MessageStreamInfo,
-    Message,
-    ReadMessagesOptions,
     CreateMessageStreamRequest,
     CreateMessageStreamResponse,
+    UpdateMessageStreamRequest,
+    UpdateMessageStreamResponse,
     DeleteMessageStreamRequest,
     DeleteMessageStreamResponse,
     DescribeMessageStreamRequest,
+    MessageStreamInfo,
     DescribeMessageStreamResponse,
     AppendMessageRequest,
     AppendMessageResponse,
+    ReadMessagesOptions,
     ReadMessagesRequest,
+    Message,
     ReadMessagesResponse,
     ListStreamsRequest,
     ListStreamsResponse,
+    TimeInNanos,
+    Variant,
+    Quality,
+    AssetPropertyValue,
+    PutAssetPropertyValueEntry,
 };

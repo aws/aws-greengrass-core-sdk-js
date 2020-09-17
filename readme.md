@@ -105,9 +105,25 @@ As new features are added to AWS IoT Greengrass, newer versions of the AWS IoT G
 
 </tr>
 
+<tr>
+
+<td>1.11.x</td>
+
+<td>1.0.x-1.7.x</td>
+
+</tr>
+
 </tbody>
 
 </table>
+
+</div>
+
+<div class="Section" id="1.7.0updates">
+
+## 1.7.0 Updates[¶](#1.7.0updates "Permalink to this headline")
+
+Stream manager supports automatic data export to AWS S3 and AWS IoT SiteWise, provides new API method to update existing streams, and pause or resume exporting.
 
 </div>
 

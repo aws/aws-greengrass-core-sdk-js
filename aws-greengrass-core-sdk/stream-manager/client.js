@@ -9,11 +9,20 @@ const cbor = require('cbor');
 const net = require('net');
 const smData = require('aws-greengrass-core-sdk/stream-manager/data');
 const exceptions = require('./exceptions');
+const utilInternal = require('./utilInternal');
 const util = require('./util');
 
 // Consts
-const PROTOCOL_VERSION = '1.0.0';
-const SDK_VERSION = '1.0.0';
+
+// Version of the Java SDK.
+// NOTE: When you bump this version,
+// consider adding the old version to olderSupportedProtocolVersions list (if you intend to support it)
+const SDK_VERSION = '1.1.0';
+
+// List of supported protocol protocol.
+// These are meant to be used for graceful degradation if the server does not support the current SDK version.
+const OLD_SUPPORTED_PROTOCOL_VERSIONS = ['1.0.0'];
+
 const CONNECT_VERSION = 1;
 
 const removeFromArray = (arr, f) => {
@@ -73,6 +82,7 @@ class StreamManagerClient {
             error: console.error,
             debug: console.debug,
             info: console.info,
+            warn: console.warn,
         },
     };
 
@@ -132,7 +142,7 @@ class StreamManagerClient {
                     // Set high water mark so that we can read 1 full packet (1GB) at a time instead of needing to
                     // try to read multiple times and combine the results. The HWM adjusts how much the socket will
                     // buffer when reading.
-                    readableHighWaterMark: util.MAX_PACKET_SIZE,
+                    readableHighWaterMark: utilInternal.MAX_PACKET_SIZE,
                 }, async () => {
                     try {
                         // Connection started
@@ -140,17 +150,18 @@ class StreamManagerClient {
                         this.#connected = false;
 
                         const request = new smData.ConnectRequest()
-                            .withProtocolVersion(PROTOCOL_VERSION)
+                            .withProtocolVersion(smData.VersionInfo.PROTOCOL_VERSION.asMap())
                             .withSdkVersion(SDK_VERSION)
                             .withAuthToken(this.#authToken)
-                            .withRequestId(util.uuidv4());
+                            .withOtherSupportedProtocolVersions(OLD_SUPPORTED_PROTOCOL_VERSIONS)
+                            .withRequestId(utilInternal.uuidv4());
 
                         // Write the connect version
-                        newSock.write(util.intToBuffer(CONNECT_VERSION, 1));
+                        newSock.write(utilInternal.intToBuffer(CONNECT_VERSION, 1));
 
                         // Write request to socket
                         const frame = new smData.MessageFrame(smData.Operation.Connect, cbor.encode(request.asMap()));
-                        const byteFrame = util.encodeFrame(frame);
+                        const byteFrame = utilInternal.encodeFrame(frame);
                         newSock.write(byteFrame.header);
                         newSock.write(byteFrame.payload);
 
@@ -233,7 +244,7 @@ class StreamManagerClient {
             this.__handleReadResponse(cbor.decodeFirstSync(frame.payload), frame);
         } else {
             // Read connect version
-            const connectResponseVersion = util.intFromBuffer(await this.__readSocket(1, socket));
+            const connectResponseVersion = utilInternal.intFromBuffer(await this.__readSocket(1, socket));
             if (connectResponseVersion !== CONNECT_VERSION) {
                 this.#logger.error('Unexpected response from the server, Connect version:', connectResponseVersion);
                 throw new exceptions.ConnectFailedException('Failed to establish connection with the server');
@@ -255,6 +266,14 @@ class StreamManagerClient {
                 this.#logger.error('Received ConnectResponse with unexpected status', response.status);
                 throw new exceptions.ConnectFailedException('Failed to establish connection with the server');
             }
+
+            if (response.protocolVersion !== smData.VersionInfo.PROTOCOL_VERSION.asMap()) {
+                this.#logger.warn('SDK with version %s using Protocol version %s is not fully compatible with '
+                    + 'Server with version %s. '
+                    + 'Client has connected in a compatibility mode using protocol version %s. '
+                    + 'Some features will not work as expected', SDK_VERSION, smData.VersionInfo.PROTOCOL_VERSION.asMap(),
+                response.serverVersion, response.protocolVersion);
+            }
         }
 
         // Put ourselves back in the event loop to handle the next messages
@@ -271,8 +290,8 @@ class StreamManagerClient {
     }
 
     async __readMessageFrame(socket) {
-        const length = util.intFromBuffer(await this.__readSocket(4, socket));
-        const operation = util.intFromBuffer(await this.__readSocket(1, socket));
+        const length = utilInternal.intFromBuffer(await this.__readSocket(4, socket));
+        const operation = utilInternal.intFromBuffer(await this.__readSocket(1, socket));
 
         let op = smData.Operation.fromMap(operation);
         if (typeof op === 'undefined') {
@@ -292,6 +311,10 @@ class StreamManagerClient {
             const response = smData.CreateMessageStreamResponse.fromMap(data);
             this.#logger.debug('Received CreateMessageStreamResponse from server', frame);
             this.#requestMap[response.requestId](response);
+        } else if (frame.operation === smData.Operation.UpdateMessageStreamResponse) {
+            const response = smData.UpdateMessageStreamResponse.fromMap(data);
+            this.#logger.debug('Received UpdateMessageStreamResponse from server', frame);
+            this.#requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.DeleteMessageStreamResponse) {
             const response = smData.DeleteMessageStreamResponse.fromMap(data);
             this.#logger.debug('Received DeleteMessageStreamResponse from server', frame);
@@ -307,6 +330,10 @@ class StreamManagerClient {
         } else if (frame.operation === smData.Operation.DescribeMessageStreamResponse) {
             const response = smData.DescribeMessageStreamResponse.fromMap(data);
             this.#logger.debug('Received DescribeMessageStreamResponse from server', frame);
+            this.#requestMap[response.requestId](response);
+        } else if (frame.operation === smData.Operation.UnknownOperationError) {
+            this.#logger.error('Received response with UnknownOperation Error from server. You should update your server version');
+            const response = smData.UnknownOperationError.fromMap(data);
             this.#requestMap[response.requestId](response);
         } else if (frame.operation === smData.Operation.Unknown) {
             this.#logger.error('Received response with unknown operation from server', frame);
@@ -330,10 +357,10 @@ class StreamManagerClient {
 
         if (data.requestId === null) {
             // eslint-disable-next-line no-param-reassign
-            data.requestId = util.uuidv4();
+            data.requestId = utilInternal.uuidv4();
         }
 
-        const validation = util.isInvalid(data);
+        const validation = utilInternal.isInvalid(data);
         if (validation) {
             throw new exceptions.ValidationException(validation);
         }
@@ -357,7 +384,7 @@ class StreamManagerClient {
 
         // Write request to socket
         const frame = new smData.MessageFrame(operation, cbor.encode(data.asMap()));
-        const byteFrame = util.encodeFrame(frame);
+        const byteFrame = utilInternal.encodeFrame(frame);
         this.#socket.write(byteFrame.header);
         this.#socket.write(byteFrame.payload);
 
@@ -369,7 +396,7 @@ class StreamManagerClient {
             if (!(options instanceof smData.ReadMessagesOptions)) {
                 throw new exceptions.ValidationException('options argument to read_messages must be a ReadMessageOptions object');
             }
-            const validation = util.isInvalid(options);
+            const validation = utilInternal.isInvalid(options);
             if (validation) {
                 throw new exceptions.ValidationException(validation);
             }
@@ -395,7 +422,7 @@ class StreamManagerClient {
     async appendMessage(streamName, data) {
         const request = new smData.AppendMessageRequest().withName(streamName).withPayload(data);
         const result = await this._sendAndReceive(smData.Operation.AppendMessage, request);
-        util.throwOnErrorResponse(result);
+        utilInternal.throwOnErrorResponse(result);
         return result.sequenceNumber;
     }
 
@@ -411,7 +438,23 @@ class StreamManagerClient {
         }
         const request = new smData.CreateMessageStreamRequest().withDefinition(definition);
         const result = await this._sendAndReceive(smData.Operation.CreateMessageStream, request);
-        util.throwOnErrorResponse(result);
+        utilInternal.throwOnErrorResponse(result);
+    }
+
+    /**
+     * Updates a message stream with the new definition.
+     * Minimum version requirements: StreamManager server version 1.1 (or AWS IoT Greengrass Core 1.11.0)
+     *
+     * @param definition {aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition}
+     * @returns {Promise<void>}
+     */
+    async updateMessageStream(definition) {
+        if (!(definition instanceof smData.MessageStreamDefinition)) {
+            throw new exceptions.ValidationException('definition argument to update_stream must be a MessageStreamDefinition object');
+        }
+        const request = new smData.UpdateMessageStreamRequest().withDefinition(definition);
+        const result = await this._sendAndReceive(smData.Operation.UpdateMessageStream, request);
+        utilInternal.throwOnErrorResponse(result);
     }
 
     /**
@@ -424,7 +467,7 @@ class StreamManagerClient {
     async deleteMessageStream(streamName) {
         const request = new smData.DeleteMessageStreamRequest().withName(streamName);
         const result = await this._sendAndReceive(smData.Operation.DeleteMessageStream, request);
-        util.throwOnErrorResponse(result);
+        utilInternal.throwOnErrorResponse(result);
     }
 
     /**
@@ -452,7 +495,7 @@ class StreamManagerClient {
         StreamManagerClient.__validateReadMessagesOptions(options);
         const request = new smData.ReadMessagesRequest().withStreamName(streamName).withReadMessagesOptions(options);
         const result = await this._sendAndReceive(smData.Operation.ReadMessages, request);
-        util.throwOnErrorResponse(result);
+        utilInternal.throwOnErrorResponse(result);
         return result.messages;
     }
 
@@ -464,7 +507,7 @@ class StreamManagerClient {
     async listStreams() {
         const request = new smData.ListStreamsRequest();
         const result = await this._sendAndReceive(smData.Operation.ListStreams, request);
-        util.throwOnErrorResponse(result);
+        utilInternal.throwOnErrorResponse(result);
         return result.streams;
     }
 
@@ -478,7 +521,7 @@ class StreamManagerClient {
     async describeMessageStream(streamName) {
         const request = new smData.DescribeMessageStreamRequest().withName(streamName);
         const result = await this._sendAndReceive(smData.Operation.DescribeMessageStream, request);
-        util.throwOnErrorResponse(result);
+        utilInternal.throwOnErrorResponse(result);
         return result.messageStreamInfo;
     }
 
@@ -517,4 +560,5 @@ module.exports = {
     ...smData,
     StreamManagerClient: StreamManagerClient,
     ...exceptions,
+    util,
 };

@@ -29,7 +29,7 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a><a href="aws-greengrass-core-sdk.StreamManager.html">.StreamManager</a>~</span>KinesisConfig<span class="signature">(identifier, kinesisStreamName, batchSize, batchIntervalMillis, priority)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a><a href="aws-greengrass-core-sdk.StreamManager.html">.StreamManager</a>~</span>KinesisConfig<span class="signature">(identifier, kinesisStreamName, batchSize, batchIntervalMillis, priority, startSequenceNumber, disabled)</span><span class="type-signature"></span></h2>
         
             <div class="class-description">Configuration object for Kinesis data streams export destination.</div>
         
@@ -46,7 +46,7 @@
     
 
     
-    <h4 class="name" id="KinesisConfig"><span class="type-signature"></span>new KinesisConfig<span class="signature">(identifier, kinesisStreamName, batchSize, batchIntervalMillis, priority)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="KinesisConfig"><span class="type-signature"></span>new KinesisConfig<span class="signature">(identifier, kinesisStreamName, batchSize, batchIntervalMillis, priority, startSequenceNumber, disabled)</span><span class="type-signature"></span></h4>
     
 
     
@@ -140,7 +140,7 @@
                 </td>
             
 
-            <td class="description last">The name of the Kinesis data stream that this exporter should upload to</td>
+            <td class="description last">The name of the Kinesis data stream that this exporter should upload to.</td>
         </tr>
 
     
@@ -169,7 +169,7 @@
                 </td>
             
 
-            <td class="description last">The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+            <td class="description last">The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.</td>
         </tr>
@@ -235,6 +235,64 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>startSequenceNumber</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>disabled</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Enable or disable this export. Default is false.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -272,7 +330,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1939">line 1939</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3623">line 3623</a>
     </li></ul></dd>
     
 
@@ -368,7 +426,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2070">line 2070</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3766">line 3766</a>
     </li></ul></dd>
     
 
@@ -426,7 +484,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2078">line 2078</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3774">line 3774</a>
     </li></ul></dd>
     
 
@@ -450,7 +508,7 @@
 
 
 <div class="description">
-    The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+    The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.
 </div>
@@ -490,7 +548,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2037">line 2037</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3733">line 3733</a>
     </li></ul></dd>
     
 
@@ -548,7 +606,127 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2045">line 2045</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3741">line 3741</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="disabled"><span class="type-signature"></span>disabled<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Enable or disable this export. Default is false.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3851">line 3851</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="disabled"><span class="type-signature"></span>disabled<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3857">line 3857</a>
     </li></ul></dd>
     
 
@@ -611,7 +789,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1979">line 1979</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3675">line 3675</a>
     </li></ul></dd>
     
 
@@ -669,7 +847,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1986">line 1986</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3682">line 3682</a>
     </li></ul></dd>
     
 
@@ -693,7 +871,7 @@
 
 
 <div class="description">
-    The name of the Kinesis data stream that this exporter should upload to
+    The name of the Kinesis data stream that this exporter should upload to.
 </div>
 
 
@@ -731,7 +909,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2008">line 2008</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3704">line 3704</a>
     </li></ul></dd>
     
 
@@ -789,7 +967,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2014">line 2014</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3710">line 3710</a>
     </li></ul></dd>
     
 
@@ -851,7 +1029,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2101">line 2101</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3797">line 3797</a>
     </li></ul></dd>
     
 
@@ -909,7 +1087,127 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2107">line 2107</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3803">line 3803</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="startSequenceNumber"><span class="type-signature"></span>startSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3824">line 3824</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="startSequenceNumber"><span class="type-signature"></span>startSequenceNumber<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3830">line 3830</a>
     </li></ul></dd>
     
 
@@ -1036,7 +1334,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2091">line 2091</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3787">line 3787</a>
     </li></ul></dd>
     
 
@@ -1146,7 +1444,7 @@
 
             
 
-            <td class="description last">The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 1.
+            <td class="description last">The maximum size of a batch to send to Kinesis. Messages will be queued until the batch size is reached, after which they will then be uploaded. If unspecified the default will be 500.
        If both batchSize and batchIntervalMillis are specified, then messages will be eligible for upload when either condition is met.
        The batch size must be between 1 and 500.</td>
         </tr>
@@ -1189,7 +1487,158 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2058">line 2058</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3754">line 3754</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withDisabled"><span class="type-signature"></span>withDisabled<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Enable or disable this export. Default is false.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3868">line 3868</a>
     </li></ul></dd>
     
 
@@ -1341,7 +1790,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line1998">line 1998</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3694">line 3694</a>
     </li></ul></dd>
     
 
@@ -1451,7 +1900,7 @@
 
             
 
-            <td class="description last">The name of the Kinesis data stream that this exporter should upload to</td>
+            <td class="description last">The name of the Kinesis data stream that this exporter should upload to.</td>
         </tr>
 
     
@@ -1492,7 +1941,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2025">line 2025</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3721">line 3721</a>
     </li></ul></dd>
     
 
@@ -1643,7 +2092,158 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line2118">line 2118</a>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3814">line 3814</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withStartSequenceNumber"><span class="type-signature"></span>withStartSequenceNumber<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">aws-greengrass-core-sdk.StreamManager.KinesisConfig</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The sequence number of the message to use as the starting message in the export. Default is 0. The sequence number provided should be less than the newest sequence number in the stream, i.e., sequence number of the last messaged appended. To find the newest sequence number, describe the stream and then check the storage status of the returned MessageStreamInfo object.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line3841">line 3841</a>
     </li></ul></dd>
     
 
@@ -1707,13 +2307,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AssetPropertyValue.html">AssetPropertyValue</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.EventType.html">EventType</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportFormat.html">ExportFormat</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig.html">IoTSiteWiseConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry.html">PutAssetPropertyValueEntry</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Quality.html">Quality</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition.html">S3ExportTaskDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig.html">S3ExportTaskExecutorConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Status.html">Status</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusConfig.html">StatusConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusContext.html">StatusContext</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusLevel.html">StatusLevel</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusMessage.html">StatusMessage</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TimeInNanos.html">TimeInNanos</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TraceableRequest.html">TraceableRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UnknownOperationError.html">UnknownOperationError</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamRequest.html">UpdateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse.html">UpdateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Variant.html">Variant</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.VersionInfo.html">VersionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deserializeJsonBytesToObj">deserializeJsonBytesToObj</a></li><li><a href="global.html#validateAndSerializeToJsonBytes">validateAndSerializeToJsonBytes</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri May 01 2020 00:24:23 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Sep 17 2020 01:16:53 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

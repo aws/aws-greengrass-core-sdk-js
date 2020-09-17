@@ -13,6 +13,7 @@ const KEY_VERSION_STAGE = 'VersionStage';
 const KEY_SECRET_ARN = 'ARN';
 const KEY_SECRET_NAME = 'Name';
 const KEY_CREATED_DATE = 'CreatedDate';
+const KEY_JSON_RESULT_FLAG = 'DeStringifyResultFlag';
 
 const { envVars } = GreengrassCommon;
 const { SECRETS_MANAGER_FUNCTION_ARN } = envVars;
@@ -38,14 +39,14 @@ class SecretsManager {
      *
      * @callback secretsManagerCallback
      * @param err {Error} The error object returned from the request. Set to <tt>null</tt> if the request is successful.
-     * @param data {String} The json-serialized data returned from the request. Set to <tt>null</tt> if a request error occurs. This string can be parsed to get the Object with the following info:
-     * data.ARN {String} The ARN of the secret.
-     * data.Name {String} The friendly name of the secret.
-     * data.VersionId {String} The unique identifier of this version of the secret.
-     * data.SecretBinary {Buffer|TypedArray|Blob|String} The decrypted part of the protected secret information that was originally provided as binary data in the form of a byte array.
+     * @param data {Object|String} data returned from the request. Return type is decided on DeStringifyResultFlag flag in request. Set to <tt>null</tt> if a request error occurs.
+     * @param data.ARN {String} The ARN of the secret.
+     * @param data.Name {String} The friendly name of the secret.
+     * @param data.VersionId {String} The unique identifier of this version of the secret.
+     * @param data.SecretBinary {Buffer|TypedArray|Blob|String} The decrypted part of the protected secret information that was originally provided as binary data in the form of a byte array.
      * The response parameter represents the binary data as a base64-encoded string.
-     * data.SecretString {String} The decrypted part of the protected secret information that was originally provided as a string.
-     * data.VersionStages {String[]} Specifies the secret version that you want to retrieve by the staging label attached to the version.
+     * @param data.SecretString {String} The decrypted part of the protected secret information that was originally provided as a string.
+     * @param data.VersionStages {String[]} Specifies the secret version that you want to retrieve by the staging label attached to the version.
      * <br/>Staging labels are used to keep track of different versions during the rotation process.
      */
 
@@ -56,6 +57,7 @@ class SecretsManager {
      * @param params.SecretId {String} Specifies the secret containing the version that you want to retrieve. You can specify either the Amazon Resource Name (ARN) or the friendly name of the secret.
      * @param params.VersionStage {String} Specifies the secret version that you want to retrieve by the staging label attached to the version.
      * <br/>Staging labels are used to keep track of different versions during the rotation process.
+     * @param params.DeStringifyResultFlag {boolean} Optional Flag to decide the return type from getSecretValue. If set, it returns de-serialized data object, otherwise it returns stringified response.
      * @param callback {secretsManagerCallback} The callback.
      *
      * @example <caption>Retrieving a local secret value</caption>
@@ -74,6 +76,7 @@ class SecretsManager {
         const secretId = Util.getParameter(params, KEY_SECRET_ID);
         const versionId = Util.getParameter(params, KEY_VERSION_ID);
         const versionStage = Util.getParameter(params, KEY_VERSION_STAGE);
+        const isJSONResultFlagSet = Util.getParameter(params, KEY_JSON_RESULT_FLAG);
 
         if (secretId === undefined) {
             callback(new Error(`"${KEY_SECRET_ID}" is a required parameter`), null);
@@ -102,7 +105,11 @@ class SecretsManager {
             if (err) {
                 callback(err, null); // an error occurred
             } else if (SecretsManager._is200Response(data.Payload)) {
-                callback(null, data.Payload); // successful response
+                // successful response
+                if (isJSONResultFlagSet) {
+                    callback(null, JSON.parse(data.Payload));
+                }
+                callback(null, data.Payload);
             } else {
                 callback(new Error(JSON.stringify(data.Payload)), null); // error response
             }
