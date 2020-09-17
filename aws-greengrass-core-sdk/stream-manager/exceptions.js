@@ -23,6 +23,9 @@ class ServerOutOfMemoryException extends StreamManagerException {}
 class ServerTimeoutException extends StreamManagerException {}
 class UnauthorizedException extends StreamManagerException {}
 class UnknownFailureException extends StreamManagerException {}
+class UpdateFailedException extends StreamManagerException {}
+class UnknownOperationException extends StreamManagerException {}
+class UpdateNotAllowedException extends InvalidRequestException {}
 class ValidationException extends ClientException {}
 
 module.exports = {
@@ -40,4 +43,7 @@ module.exports = {
     UnauthorizedException,
     UnknownFailureException,
     ValidationException,
+    UpdateFailedException,
+    UpdateNotAllowedException,
+    UnknownOperationException,
 };
