@@ -42,12 +42,30 @@ exports.handler = function handler(event, context, callback) {
                     callback(err);
                 } else {
                     console.log(data);
-                    callback(null, 0);
+
+                    // Get Thing Shadow
+                    console.log('Shadow Get Operation');
+                    iotClient.getThingShadow(shadowGetParams, (err, data) => {
+                        if (err) {
+                            console.log(err);
+                            callback(err);
+                        } else {
+                            console.log(data);
+                            // Get Thing Shadow
+                            console.log('Shadow Get Operation');
+                            iotClient.getThingShadow(shadowGetParams, (err, data) => {
+                                if (err) {
+                                    console.log(err);
+                                    callback(err);
+                                } else {
+                                    console.log(data);
+                                    callback(null, 0);
+                                }
+                            });
+                        }
+                    });   
                 }
             });
         }
-    });
-
-    // Get Thing Shadow
-    
+    }); 
 };
