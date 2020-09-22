@@ -10,7 +10,7 @@ const ggSdk = require('aws-greengrass-core-sdk');
 
 const lambdaClient = new ggSdk.Lambda();
 
-exports.handler = function handler(event, context) {
+exports.handler = function handler(event, context, callback) {
     console.log(event);
     console.log(context);
 
@@ -33,8 +33,10 @@ exports.handler = function handler(event, context) {
     lambdaClient.invoke(params, (err, data) => {
         if (err) {
             console.error(err, err.stack);
+            callback(err);
         } else {
             console.log(data);
+            callback(undefined, 0);
         }
     });
 };
