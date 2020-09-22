@@ -41,6 +41,10 @@ const removeFromArray = (arr, f) => {
  * c.onConnected(async () => {
  *     // Do work with the client (c) here.
  * });
+ * process.on('unhandledRejection', (reason, promise) => {
+ *     console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+ *     // Application specific logging, throwing an error, or other logic here
+*  });
  */
 class StreamManagerClient {
     #closed = false;

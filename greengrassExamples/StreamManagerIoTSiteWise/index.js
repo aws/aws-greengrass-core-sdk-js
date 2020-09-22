@@ -89,6 +89,11 @@ c.onConnected(async () => {
     }
 });
 
+process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Perform the appropriate action based on the reason
+});
+
 // Dummy handler because this example should run as a long-lived lambda
 module.exports.handler = function handler() {
     return '';
