@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lambda.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lambda.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ */
+
+const IPCClient = require('aws-greengrass-ipc-sdk-js');
+const GreengrassCommon = require('aws-greengrass-common-js');
+const { logging } = require('aws-greengrass-common-js');
+const Util = require('./util');
+
+const { AUTH_TOKEN } = GreengrassCommon.envVars;
+
+const logger = new logging.LocalWatchLogger();
+
+/**
+ * Constructs a service interface object. Each API operation is exposed as a function on service.
+ * @class
+ * @memberOf aws-greengrass-core-sdk
+ */
+class Lambda {
+    /**
+     * Constructs a service object. This object has one method for each API operation.
+     *
+     * @example &lt;caption>Constructing a Lambda object&lt;/caption>
+     * var lambda = new GG.Lambda();
+     */
+    constructor() {
+        this.ipc = new IPCClient(AUTH_TOKEN);
+    }
+
+    /**
+     * Called when a response from the service is returned.
+     *
+     * @callback lambdaCallback
+     * @param err {Error} The error object returned from the request. Set to &lt;tt>null&lt;/tt> if the request is successful.
+     * @param data {Object} The de-serialized data returned from the request. Set to &lt;tt>null&lt;/tt> if a request error occurs.
+     * @param data.StatusCode {Integer} The HTTP status code will be in the 200 range for successful request. For the &lt;tt>RequestResponse&lt;/tt> invocation type this status code will be 200.
+     * For the &lt;tt>Event&lt;/tt> invocation type this status code will be 202.
+     * @param data.FunctionError {String} Indicates whether an error occurred while executing the Lambda function. If an error occurred this field will have one of two values; &lt;tt>Handled&lt;/tt> or &lt;tt>Unhandled&lt;/tt>.
+     * &lt;tt>Handled&lt;/tt> errors are errors that are reported by the function while the Unhandled errors are those detected and reported by AWS Lambda.
+     * &lt;tt>Unhandled&lt;/tt> errors include out of memory errors and function timeouts. For information about how to report an &lt;tt>Handled&lt;/tt> error,
+     * see &lt;a href="http://docs.aws.amazon.com/lambda/latest/dg/programming-model.html">Programming Model&lt;/a>.
+     * @param data.Payload {Buffer|TypedArray|Blob|String} It is the result returned by the Lambda function. This is present only if the invocation type is &lt;tt>RequestResponse&lt;/tt>.
+     * &lt;br/>In the event of a function error this field contains a message describing the error. For the &lt;tt>Handled&lt;/tt> errors the Lambda function will report this message. For &lt;tt>Unhandled&lt;/tt> errors AWS Lambda reports the message.
+     */
+
+    /**
+     * Invokes a specific Lambda function.&lt;br/>
+     * In Greengrass, version of the Lambda which you would like to invoke needs to be provided.
+     *
+     * @param params {Object}
+     * @param params.FunctionName {String} The Lambda function name. You can specify Amazon Resource Name (ARN) of the function (for example, &lt;tt>arn:aws:lambda:us-west-2:account-id:function:ThumbNail&lt;/tt>).
+     * @param params.InvocationType {String?} By default, the &lt;tt>Invoke&lt;/tt> API assumes &lt;tt>RequestResponse&lt;/tt> invocation type.
+     * You can optionally request asynchronous execution by specifying &lt;tt>Event&lt;/tt> as the &lt;tt>InvocationType&lt;/tt>. Possible values include:
+     * &lt;ul>&lt;li>"Event"&lt;/li>&lt;li>"RequestResponse"&lt;/li>&lt;/ul>
+     * @param params.ClientContext {String?} Using the &lt;tt>ClientContext&lt;/tt> you can pass client-specific information to the Lambda function you are invoking.
+     * You can then process the client information in your Lambda function as you choose through the context variable.
+     * For an example of a &lt;tt>ClientContext&lt;/tt> JSON, see the main page or an example folder for an example.
+     * &lt;br/>The &lt;tt>ClientContext&lt;/tt> JSON must be base64-encoded.
+     * @param params.Payload {Buffer|TypedArray|Blob|String} Payload that you want to provide to your Lambda function as input.
+     * @param params.Qualifier {String?} You can use this optional parameter to specify a Lambda function version if it was not included in the FunctionName field.
+     * If you specify a function version, the API uses the qualified function ARN to invoke a specific Lambda function.
+     * &lt;br/>If you don't provide this parameter, then the API uses the FunctionName field only. If it does not have a version number of the target lambda, the call will fail.
+     * @param callback {lambdaCallback} The callback.
+     *
+     * @example &lt;caption>To invoke a Lambda function&lt;/caption>
+     * //This operation invokes a Lambda function
+     *
+     * var params = {
+     *   ClientContext: "MyApp",
+     *   FunctionName: "MyFunction",
+     *   InvocationType: "Event",
+     *   Payload: &lt;json | binary>,
+     *   Qualifier: "1"
+     * };
+     * lambda.invoke(params, function(err, data) {
+     *   if (err) console.log(err, err.stack); // an error occurred
+     *   else     console.log(data);           // successful response
+     * });
+     *
+     * @example &lt;caption>Calling the invoke operation&lt;/caption>
+     * var params = {
+     *   FunctionName: 'STRING_VALUE', // required
+     *   ClientContext: 'STRING_VALUE',
+     *   InvocationType: Event | RequestResponse,
+     *   Payload: &lt;json | binary>,
+     *   Qualifier: 'STRING_VALUE'
+     * };
+     * lambda.invoke(params, function(err, data) {
+     *   if (err) console.log(err, err.stack); // an error occurred
+     *   else     console.log(data);           // successful response
+     * });
+     */
+    invoke(params, callback) {
+        const functionName = Util.getParameter(params, 'FunctionName');
+        if (functionName === undefined) {
+            callback(new Error('"FunctionName" is a required parameter'), null);
+            return;
+        }
+
+        let arnFields;
+        try {
+            arnFields = new GreengrassCommon.FunctionArnFields(functionName);
+        } catch (e) {
+            callback(new Error(`FunctionName is malformed: ${e}`), null);
+            return;
+        }
+
+        let invocationType;
+        if (params.InvocationType === undefined || params.InvocationType === null) {
+            invocationType = 'RequestResponse';
+        } else {
+            invocationType = params.InvocationType;
+        }
+
+        if (invocationType !== 'Event' &amp;&amp; invocationType !== 'RequestResponse') {
+            callback(new Error(`InvocationType '${invocationType}' is incorrect, should be 'Event' or 'RequestResponse'`), null);
+            return;
+        }
+
+        const clientContext = params.ClientContext ? params.ClientContext : '';
+        const payload = params.Payload;
+        const qualifier = params.Qualifier;
+
+        if (!Util.isValidQualifier(qualifier)) {
+            callback(new Error(`Qualifier '${qualifier}' is incorrect`), null);
+            return;
+        }
+
+        const qualifierInternal = arnFields.qualifier;
+
+        // generate the right full function arn with qualifier
+        if (qualifierInternal &amp;&amp; qualifier &amp;&amp; qualifierInternal !== qualifier) {
+            callback(new Error(`Qualifier '${qualifier}' does not match the version in FunctionName`), null);
+            return;
+        }
+
+        const finalQualifier = qualifierInternal === undefined || qualifierInternal == null ? qualifier : qualifierInternal;
+
+        let functionArn;
+        if (typeof GreengrassCommon.buildFunctionArn === 'function') {
+            // GGC v1.9.0 or newer
+            functionArn = GreengrassCommon.buildFunctionArn(
+                arnFields.unqualifiedArn,
+                finalQualifier,
+            );
+        } else {
+            // older version of GGC
+            throw new Error('Function buildFunctionArn not found. buildFunctionArn is introduced in GGC v1.9.0. '
+                    + 'Please check your GGC version.');
+        }
+
+        // verify client context is base64 encoded
+        if (Object.prototype.hasOwnProperty.call(params, 'ClientContext')) {
+            const cxt = params.ClientContext;
+            if (!Util.isValidContext(cxt)) {
+                callback(new Error('Client Context is invalid'), null);
+                return;
+            }
+        }
+
+        logger.debug(`Invoking local lambda ${functionArn} with payload ${payload} and client context ${clientContext}`);
+
+        this.ipc.postWork(functionArn, payload, clientContext, invocationType, (postWorkErr, invocationId) => {
+            if (postWorkErr) {
+                logger.error(`Failed to invoke function due to ${postWorkErr}`);
+                callback(postWorkErr, null);
+                return;
+            }
+
+            if (invocationType === 'RequestResponse') {
+                this.ipc.getWorkResult(functionArn, invocationId, (getWorkResultErr, body, functionErr, statusCode) => {
+                    if (getWorkResultErr) {
+                        logger.error(`Failed to get work result due to ${getWorkResultErr}`);
+                        callback(getWorkResultErr, null);
+                        return;
+                    }
+                    const data = {
+                        FunctionError: functionErr,
+                        StatusCode: statusCode,
+                        Payload: body,
+                    };
+                    callback(null, data);
+                });
+            } else {
+                callback(null, invocationId);
+            }
+        });
+    }
+}
+
+module.exports = Lambda;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AssetPropertyValue.html">AssetPropertyValue</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.EventType.html">EventType</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportFormat.html">ExportFormat</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig.html">IoTSiteWiseConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry.html">PutAssetPropertyValueEntry</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Quality.html">Quality</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition.html">S3ExportTaskDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig.html">S3ExportTaskExecutorConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Status.html">Status</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusConfig.html">StatusConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusContext.html">StatusContext</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusLevel.html">StatusLevel</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusMessage.html">StatusMessage</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TimeInNanos.html">TimeInNanos</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TraceableRequest.html">TraceableRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UnknownOperationError.html">UnknownOperationError</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamRequest.html">UpdateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse.html">UpdateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Variant.html">Variant</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.VersionInfo.html">VersionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deserializeJsonBytesToObj">deserializeJsonBytesToObj</a></li><li><a href="global.html#validateAndSerializeToJsonBytes">validateAndSerializeToJsonBytes</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Sep 17 2020 01:16:53 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

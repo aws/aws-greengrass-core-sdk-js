@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: MessageStreamDefinition</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: MessageStreamDefinition</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a><a href="aws-greengrass-core-sdk.StreamManager.html">.StreamManager</a>~</span>MessageStreamDefinition<span class="signature">(name, maxSize, streamSegmentSize, timeToLiveMillis, strategyOnFull, persistence, flushOnWrite, exportDefinition)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Object defining a message stream used in the CreateMessageStream and UpdateMessageStream API.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="MessageStreamDefinition"><span class="type-signature"></span>new MessageStreamDefinition<span class="signature">(name, maxSize, streamSegmentSize, timeToLiveMillis, strategyOnFull, persistence, flushOnWrite, exportDefinition)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">The unique name of the stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    268435456
+                
+                </td>
+            
+
+            <td class="description last">The maximum size in bytes for the entire stream. Set to 256MB by default with a minimum of 1KB and a maximum of 8192PB.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>streamSegmentSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    16777216
+                
+                </td>
+            
+
+            <td class="description last">The size of each segment of the stream. Set to 16MB by default with a minimum of 1KB and a maximum of 2GB.
+       Data is only deleted segment by segment, so the segment size is the smallest amount of data which can be deleted.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeToLiveMillis</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Time to live for each message in milliseconds. Data may be deleted at any time after the TTL expires; deletion is not guaranteed to occur immediately when the TTL expires.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strategyOnFull</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">aws-greengrass-core-sdk.StreamManager.StrategyOnFull</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">What to do when the maximum size of the stream is reached.
+       RejectNewData: any append message request after the stream is full will be rejected with an exception.
+       OverwriteOldestData: the oldest stream segments will be deleted until there is room for the new message.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>persistence</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">aws-greengrass-core-sdk.StreamManager.Persistence</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Stream persistence. If set to File, the file system will be used to persist messages long-term and is resilient to restarts.
+       Memory should be used when performance matters more than durability as it only stores the stream in memory and never writes to the disk.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>flushOnWrite</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">This only applies when Persistence is set to File mode.
+       Waits for the filesystem to complete the write for every message. This is safer, but slower. Default is false.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>exportDefinition</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">aws-greengrass-core-sdk.StreamManager.ExportDefinition</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">Defines how and where the stream is uploaded. See the definition of the ExportDefinition object for more detail.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5209">line 5209</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="exportDefinition"><span class="type-signature"></span>exportDefinition<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Defines how and where the stream is uploaded. See the definition of the ExportDefinition object for more detail.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5476">line 5476</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="exportDefinition"><span class="type-signature"></span>exportDefinition<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5482">line 5482</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="flushOnWrite"><span class="type-signature"></span>flushOnWrite<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    This only applies when Persistence is set to File mode.
+       Waits for the filesystem to complete the write for every message. This is safer, but slower. Default is false.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5447">line 5447</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="flushOnWrite"><span class="type-signature"></span>flushOnWrite<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5454">line 5454</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="maxSize"><span class="type-signature"></span>maxSize<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The maximum size in bytes for the entire stream. Set to 256MB by default with a minimum of 1KB and a maximum of 8192PB.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5296">line 5296</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="maxSize"><span class="type-signature"></span>maxSize<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5302">line 5302</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The unique name of the stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5267">line 5267</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5274">line 5274</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="persistence"><span class="type-signature"></span>persistence<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Stream persistence. If set to File, the file system will be used to persist messages long-term and is resilient to restarts.
+       Memory should be used when performance matters more than durability as it only stores the stream in memory and never writes to the disk.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5417">line 5417</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="persistence"><span class="type-signature"></span>persistence<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5424">line 5424</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="strategyOnFull"><span class="type-signature"></span>strategyOnFull<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    What to do when the maximum size of the stream is reached.
+       RejectNewData: any append message request after the stream is full will be rejected with an exception.
+       OverwriteOldestData: the oldest stream segments will be deleted until there is room for the new message.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5385">line 5385</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="strategyOnFull"><span class="type-signature"></span>strategyOnFull<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5393">line 5393</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="streamSegmentSize"><span class="type-signature"></span>streamSegmentSize<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    The size of each segment of the stream. Set to 16MB by default with a minimum of 1KB and a maximum of 2GB.
+       Data is only deleted segment by segment, so the segment size is the smallest amount of data which can be deleted.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5324">line 5324</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="streamSegmentSize"><span class="type-signature"></span>streamSegmentSize<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5331">line 5331</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="timeToLiveMillis"><span class="type-signature"></span>timeToLiveMillis<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Time to live for each message in milliseconds. Data may be deleted at any time after the TTL expires; deletion is not guaranteed to occur immediately when the TTL expires.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5354">line 5354</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="timeToLiveMillis"><span class="type-signature"></span>timeToLiveMillis<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5361">line 5361</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withExportDefinition"><span class="type-signature"></span>withExportDefinition<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">aws-greengrass-core-sdk.StreamManager.ExportDefinition</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Defines how and where the stream is uploaded. See the definition of the ExportDefinition object for more detail.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5493">line 5493</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withFlushOnWrite"><span class="type-signature"></span>withFlushOnWrite<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">This only applies when Persistence is set to File mode.
+       Waits for the filesystem to complete the write for every message. This is safer, but slower. Default is false.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5466">line 5466</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withMaxSize"><span class="type-signature"></span>withMaxSize<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The maximum size in bytes for the entire stream. Set to 256MB by default with a minimum of 1KB and a maximum of 8192PB.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5313">line 5313</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withName"><span class="type-signature"></span>withName<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The unique name of the stream.
+       Must be an alphanumeric string including spaces, commas, periods, hyphens, and underscores with length between 1 and 255.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5286">line 5286</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withPersistence"><span class="type-signature"></span>withPersistence<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">aws-greengrass-core-sdk.StreamManager.Persistence</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Stream persistence. If set to File, the file system will be used to persist messages long-term and is resilient to restarts.
+       Memory should be used when performance matters more than durability as it only stores the stream in memory and never writes to the disk.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5436">line 5436</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withStrategyOnFull"><span class="type-signature"></span>withStrategyOnFull<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">aws-greengrass-core-sdk.StreamManager.StrategyOnFull</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">What to do when the maximum size of the stream is reached.
+       RejectNewData: any append message request after the stream is full will be rejected with an exception.
+       OverwriteOldestData: the oldest stream segments will be deleted until there is room for the new message.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5406">line 5406</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withStreamSegmentSize"><span class="type-signature"></span>withStreamSegmentSize<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The size of each segment of the stream. Set to 16MB by default with a minimum of 1KB and a maximum of 2GB.
+       Data is only deleted segment by segment, so the segment size is the smallest amount of data which can be deleted.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5343">line 5343</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="withTimeToLiveMillis"><span class="type-signature"></span>withTimeToLiveMillis<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Time to live for each message in milliseconds. Data may be deleted at any time after the TTL expires; deletion is not guaranteed to occur immediately when the TTL expires.
+       The minimum value is 60000 milliseconds and the maximum is 9223372036854 milliseconds.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stream-manager_data_index.js.html">stream-manager/data/index.js</a>, <a href="stream-manager_data_index.js.html#line5373">line 5373</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AssetPropertyValue.html">AssetPropertyValue</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.EventType.html">EventType</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportFormat.html">ExportFormat</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig.html">IoTSiteWiseConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry.html">PutAssetPropertyValueEntry</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Quality.html">Quality</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition.html">S3ExportTaskDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig.html">S3ExportTaskExecutorConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Status.html">Status</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusConfig.html">StatusConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusContext.html">StatusContext</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusLevel.html">StatusLevel</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusMessage.html">StatusMessage</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TimeInNanos.html">TimeInNanos</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TraceableRequest.html">TraceableRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UnknownOperationError.html">UnknownOperationError</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamRequest.html">UpdateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse.html">UpdateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Variant.html">Variant</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.VersionInfo.html">VersionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deserializeJsonBytesToObj">deserializeJsonBytesToObj</a></li><li><a href="global.html#validateAndSerializeToJsonBytes">validateAndSerializeToJsonBytes</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Sep 17 2020 01:16:53 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

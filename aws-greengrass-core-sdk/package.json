@@ -1,0 +1,17 @@
+{
+  "name": "aws-greengrass-core-sdk",
+  "version": "1.7.0",
+  "main": "index.js",
+  "dependencies": {
+    "cbor": "5.0.1"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/aws-greengrass-core-sdk-js"
+  }
+}

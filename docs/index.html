@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h2>AWS Greengrass Core SDK for JavaScript</h2>
+<p>The <strong>AWS Greengrass Core SDK for JavaScript</strong> allows developers to write JavaScript Lambda functions which will run within Greengrass.</p>
+<h2>Overview</h2>
+<p>This document provides instructions for preparing your Greengrass Core environment to run Lambda functions written in JavaScript. It also includes examples on how to develop a Lambda function in JavaScript as well as packaging and running an example Hello World file in JavaScript for your Greengrass core.</p>
+<h2>Preparing your Greengrass to run NodeJS Lambda functions</h2>
+<p>The environment where Greengrass is running on needs to be able to run NodeJS 12.x applications.</p>
+<ul>
+<li>Install NodeJS 12 for your platform. You can download the newest NodeJS from <a href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a>.</li>
+<li>When you untar the package downloaded from NodeJS website, you will find <code>node</code> file under <code>bin</code> directory.</li>
+<li>Copy the file to <em><strong>/usr/bin</strong></em> or <em><strong>/usr/local/bin</strong></em> folder.</li>
+<li>Rename the file to <em><strong>nodejs12.x</strong></em></li>
+</ul>
+<h2>Getting Started - Hello World</h2>
+<ul>
+<li>Copy <code>samples/HelloWorld</code> folder to your workspace.</li>
+<li>Create a folder <code>node_modules</code> under <code>HelloWorld</code> folder.</li>
+<li>Unzip aws-greengrass-core-sdk-js.zip into the folder. It should create a folder HelloWorld/node_modules/aws-greengrass-core-sdk</li>
+<li>Use NPM to install the required dependency, cbor. <code>npm i cbor@5.0.1</code>.</li>
+<li>Zip up the content of HelloWorld folder so that the index.js is on the top of the zip file structure.</li>
+<li>Go to AWS Lambda Console.</li>
+<li>Create a new function.</li>
+<li>Choose the Runtime as <code>Node.js 12.x</code></li>
+<li>Upload the zip file in <em>Lambda function code</em> section.</li>
+<li>Handler is <em>index.handler</em></li>
+<li>Choose any role as the role is not used within Greengrass.</li>
+<li>After creating the function, publish the Lambda.</li>
+<li>Create an Alias and point to the Published version (not $LATEST).</li>
+<li>Go to your Greengrass Group and add the Lambda under Lambdas section.</li>
+<li>Click on the Lambda and change the <em>Lambda lifecycle</em> to <em>Make this function long-lived and keep it running indefinitely.</em></li>
+<li>Add a Subscription with the following configuration:
+<ul>
+<li>Source: Lambda which you just created and added to the group</li>
+<li>Target: IoT Cloud</li>
+<li>Topic: hello/world</li>
+</ul>
+</li>
+<li>Deploy. A message from your Lambda should be published to the topic <em>hello/world</em> in the cloud every 5 seconds. You can check this by going to AWS IoT's <em>Test</em> page and subscribing to topic <em>hello/world</em>.</li>
+</ul>
+<h2>Including aws-greengrass-core-sdk with your function</h2>
+<p>Unzip the SDK into your node_modules folder of your function. This should create a aws-greengrass-core-sdk folder which includes the SDK.</p>
+<h2>Logging in NodeJS Lambdas</h2>
+<p>Your <em>console.log</em> operation will be logged as INFO. A <em>console.error</em> operation will be logged as ERROR. Currently, our NodeJS SDK only allows you to log at INFO or ERROR level only.</p>
+<h2>Supported Datatypes</h2>
+<p>From GGC version 1.5, you can send both JSON and binary data as a payload when you invoking other Lambdas or publishing a message using IotData service. In order to make your lambda be able to handle binary payload, you need to configure the lambda in Greengrass console to mark it using binary input payload so that GGC can know how to deal with the data.</p>
+<h2>Supported Context</h2>
+<p>In Greengrass, you can send a context object in a JSON format to be passed to another Lambda that is being invoked. The context format looks like this: <code>{ custom: { customData: 'customData', }, }</code></p>
+<div class="section" id="compatibility">
+<h2>Compatibility<a href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>As new features are added to AWS IoT Greengrass, newer versions of the AWS IoT Greengrass SDK may be incompatible with older versions of the AWS IoT Greengrass core. The following table lists the compatible SDKs for all GGC releases.</p>
+<table style="width:50%">
+<tbody>
+<tr>
+<th>GGC Version</th>
+<th>Compatible SDK Versions</th>
+</tr>
+<tr>
+<td>1.0.x-1.6.x</td>
+<td>1.0.x-1.2.x</td>
+</tr>
+<tr>
+<td>1.7.x-1.8.x</td>
+<td>1.0.x-1.3.x</td>
+</tr>
+<tr>
+<td>1.9.x</td>
+<td>1.0.x-1.4.x</td>
+</tr>
+<tr>
+<td>1.10.x</td>
+<td>1.0.x-1.6.x</td>
+</tr>
+<tr>
+<td>1.11.x</td>
+<td>1.0.x-1.7.x</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="Section" id="1.7.0updates">
+<h2>1.7.0 Updates<a href="#1.7.0updates" title="Permalink to this headline">¶</a></h2>
+<p>Stream manager supports automatic data export to AWS S3 and AWS IoT SiteWise, provides new API method to update existing streams, and pause or resume exporting.</p>
+</div>
+<div class="Section" id="1.6.0updates">
+<h2>1.6.0 Updates<a href="#1.6.0updates" title="Permalink to this headline">¶</a></h2>
+<p>Added support for StreamManager, see <a href="https://docs.aws.amazon.com/greengrass/latest/developerguide/stream-manager.html">AWS Docs</a>
+for more information.</p>
+<h3>Compatibility</h3>
+<p>StreamManager has adds a new dependency to this package, <code>cbor==5.0.1</code>.
+Please make sure to include it in your lambda or else the SDK will not function.
+In addition to the new dependency, the 1.6.0 version of this SDK now requires NodeJS version 12
+or greater since NodeJS 6 and 8 are end-of-life. See <a href="https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html">https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html</a>.</p>
+<h3>StreamManager Usage</h3>
+<pre class="prettyprint source lang-javascript"><code>const {
+    StreamManagerClient
+} = require('aws-greengrass-core-sdk').StreamManager;
+
+const c = new StreamManagerClient({
+    onConnectCb: async () => {
+        try {
+            // Let's start with something simple.
+            // Just print out all the available stream names on the server 
+            console.log(await c.listStreams());
+        } finally {
+            c.close(); // Always close the client when you're done
+        }
+    }
+});
+</code></pre>
+</div>
+<div class="Section" id="1.5.0updates">
+<h2>1.5.0 Updates<a href="#1.5.0updates" title="Permalink to this headline">¶</a></h2>
+<p>Added support for publish() parameter queueFullPolicy which can be set to 'AllOrError' to enforce that the published message is either delivered to all subscription destinations or delivered to no destinations and returns an error when Greengrass Core's internal work queue is full.</p>
+</div>
+<div class="Section" id="1.4.0updates">
+<h2>1.4.0 Updates<a href="#1.4.0updates" title="Permalink to this headline">¶</a></h2>
+<p>Added support for Node.js 8.10 Lambda runtime. Lambda functions that use Node.js 8.10 runtime can now run on an AWS IoT Greengrass core. (Existing Lambda functions that use Node.js 6.10 runtime can still run on Greengrass core, but they can't be updated after 5/30/2019. Please refer to <a href="https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html">AWS Lambda Runtimes Support Policy</a>.)</p>
+</div>
+<div class="Section" id="1.3.1updates">
+<h2>1.3.1 Updates<a href="#1.3.1updates" title="Permalink to this headline">¶</a></h2>
+<p>Improved log level granularity.</p>
+</div>
+<div class="Section" id="1.3.0updates">
+<h2>1.3.0 Updates<a href="#1.3.0updates" title="Permalink to this headline">¶</a></h2>
+<p>SDK supports SecretsManager client.</p>
+</div>
+<div class="Section" id="1.2.0updates">
+<h2>1.2.0 Updates<a href="#1.2.0updates" title="Permalink to this headline">¶</a></h2>
+<p>SDK and GGC compatibility check takes place in the background.</p>
+</div>
+<div class="Section" id="1.1.0updates">
+<h2>1.1.0 Updates<a href="#1.1.0updates" title="Permalink to this headline">¶</a></h2>
+<p>Lambda only accepted payload in JSON format. With this update, Invoking or publishing binary payload to a lambda is supported.</p>
+</div>
+<div class="Section" id="1.0.1updates">
+<h2>1.0.1 Updates<a href="#1.0.1updates" title="Permalink to this headline">¶</a></h2>
+<p>Shadow operations were not receiving responses from the local shadow properly. This has been fixed.</p>
+<p>Lambda Invoke function's InvocationType's default value was Event. This has been changed to RequestResponse.</p>
+</div>
+<h2>Getting Help</h2>
+<ul>
+<li><a href="https://forums.aws.amazon.com/forum.jspa?forumID=254">Ask on a Greengrass forum</a></li>
+</ul>
+<h2>License</h2>
+<p>Apache 2.0</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="aws-greengrass-core-sdk.html">aws-greengrass-core-sdk</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.html">StreamManager</a></li></ul><h3>Classes</h3><ul><li><a href="aws-greengrass-core-sdk.IotData.html">IotData</a></li><li><a href="aws-greengrass-core-sdk.Lambda.html">Lambda</a></li><li><a href="aws-greengrass-core-sdk.SecretsManager.html">SecretsManager</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageRequest.html">AppendMessageRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AppendMessageResponse.html">AppendMessageResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.AssetPropertyValue.html">AssetPropertyValue</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectRequest.html">ConnectRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ConnectResponse.html">ConnectResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamRequest.html">CreateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.CreateMessageStreamResponse.html">CreateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamRequest.html">DeleteMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DeleteMessageStreamResponse.html">DeleteMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamRequest.html">DescribeMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.DescribeMessageStreamResponse.html">DescribeMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.EventType.html">EventType</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportDefinition.html">ExportDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ExportFormat.html">ExportFormat</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.HTTPConfig.html">HTTPConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTAnalyticsConfig.html">IoTAnalyticsConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.IoTSiteWiseConfig.html">IoTSiteWiseConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.KinesisConfig.html">KinesisConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsRequest.html">ListStreamsRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ListStreamsResponse.html">ListStreamsResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Message.html">Message</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageFrame.html">MessageFrame</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamDefinition.html">MessageStreamDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo.html">MessageStreamInfo</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._exportStatuses.html">_exportStatuses</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.MessageStreamInfo-MessageStreamInfo._storageStatus.html">_storageStatus</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Operation.html">Operation</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Persistence.html">Persistence</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.PutAssetPropertyValueEntry.html">PutAssetPropertyValueEntry</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Quality.html">Quality</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesOptions.html">ReadMessagesOptions</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesRequest.html">ReadMessagesRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ReadMessagesResponse.html">ReadMessagesResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.ResponseStatusCode.html">ResponseStatusCode</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskDefinition.html">S3ExportTaskDefinition</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.S3ExportTaskExecutorConfig.html">S3ExportTaskExecutorConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Status.html">Status</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusConfig.html">StatusConfig</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusContext.html">StatusContext</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusLevel.html">StatusLevel</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StatusMessage.html">StatusMessage</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StrategyOnFull.html">StrategyOnFull</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.StreamManagerClient.html">StreamManagerClient</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TimeInNanos.html">TimeInNanos</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.TraceableRequest.html">TraceableRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UnknownOperationError.html">UnknownOperationError</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamRequest.html">UpdateMessageStreamRequest</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.UpdateMessageStreamResponse.html">UpdateMessageStreamResponse</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.Variant.html">Variant</a></li><li><a href="aws-greengrass-core-sdk.StreamManager.VersionInfo.html">VersionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deserializeJsonBytesToObj">deserializeJsonBytesToObj</a></li><li><a href="global.html#validateAndSerializeToJsonBytes">validateAndSerializeToJsonBytes</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Sep 17 2020 01:16:53 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
