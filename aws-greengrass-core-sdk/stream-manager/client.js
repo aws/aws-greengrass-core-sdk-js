@@ -58,6 +58,7 @@ class StreamManagerClient {
      * @typedef Logger
      * @type {Object}
      * @property {function(...*)} error
+     * @property {function(...*)} warn
      * @property {function(...*)} info
      * @property {function(...*)} debug
      */
