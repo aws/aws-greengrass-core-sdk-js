@@ -17,7 +17,7 @@ The environment where Greengrass is running on needs to be able to run NodeJS 12
 
 ## Getting Started - Hello World
 
-*   Copy `samples/HelloWorld` folder to your workspace.
+*   Copy `greengrassExamples/HelloWorld` folder to your workspace.
 *   Create a folder `node_modules` under `HelloWorld` folder.
 *   Unzip aws-greengrass-core-sdk-js.zip into the folder. It should create a folder HelloWorld/node_modules/aws-greengrass-core-sdk
 *   Use NPM to install the required dependency, cbor. `npm i cbor@5.0.1`.
